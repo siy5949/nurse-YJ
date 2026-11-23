@@ -119,6 +119,50 @@
     }
     .obs-banner strong { font-weight: 700; }
 
+    /* 수혈 세트(DF) 선택 박스 */
+    .df-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .df-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .df-chip {
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .df-chip.active {
+      border-color: var(--blood);
+      color: var(--blood);
+      background: var(--blood-soft);
+    }
+
+    .df-custom-input {
+      width: 64px;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+      outline: none;
+    }
+    .df-custom-input:focus { border-color: var(--blood); }
+
     /* 혈액 제제 선택 그리드 */
     .product-grid {
       display: grid;
@@ -357,7 +401,7 @@
     <header>
       <div class="header-left">
         <h1>수혈 전용 계산기</h1>
-        <span class="badge">DF 15 고정</span>
+        <span id="df-badge" class="badge">DF 15</span>
       </div>
       <div class="nav-links">
         <a href="index.html" class="nav-link">기본형</a>
@@ -367,8 +411,18 @@
     </header>
 
     <div class="content">
-      <div class="obs-banner">
-        <strong>성인 수혈 첫 15분 관찰 속도:</strong> <strong>50 mL/hr</strong> (수혈세트 15 gtt/mL 기준 약 <strong>12.5 gtt/min</strong>, 4.8초당 1방울)로 천천히 주입하며 급성 부작용을 확인합니다.
+      <div id="obs-banner" class="obs-banner"></div>
+
+      <!-- 수혈 필터 세트(DF) 선택 및 커스텀 저장 -->
+      <div class="df-box">
+        <span class="section-label">수혈 필터 세트 규격 (Drop Factor, 기본 15 gtt/mL)</span>
+        <div class="df-row">
+          <button class="df-chip" data-df="15" onclick="setBloodDF(15)">15 gtt</button>
+          <button class="df-chip" data-df="20" onclick="setBloodDF(20)">20 gtt</button>
+          <button class="df-chip" data-df="10" onclick="setBloodDF(10)">10 gtt</button>
+          <input type="number" id="custom-df-input" class="df-custom-input" min="1" placeholder="직접" oninput="onCustomDFInput()" />
+          <button class="mini-btn save" onclick="saveHospitalDF()">내 병원 세트 저장</button>
+        </div>
       </div>
 
       <span class="section-label">1. 혈액 제제 선택 (유래 전혈 기준)</span>
@@ -401,17 +455,9 @@
         </div>
       </div>
 
-      <span class="section-label">3. 목표 수혈 시간 설정 (수혈 세트 15 gtt/mL 기준)</span>
-      <div class="quick-chips" id="time-chips">
-        <button class="chip-btn" data-min="10" onclick="setDuration(0, 10)">10분</button>
-        <button class="chip-btn" data-min="15" onclick="setDuration(0, 15)">15분</button>
-        <button class="chip-btn" data-min="30" onclick="setDuration(0, 30)">30분</button>
-        <button class="chip-btn" data-min="60" onclick="setDuration(1, 0)">1시간</button>
-        <button class="chip-btn" data-min="90" onclick="setDuration(1, 30)">1시간 30분</button>
-        <button class="chip-btn" data-min="120" onclick="setDuration(2, 0)">2시간</button>
-        <button class="chip-btn" data-min="180" onclick="setDuration(3, 0)">3시간</button>
-        <button class="chip-btn" data-min="240" onclick="setDuration(4, 0)">4시간</button>
-      </div>
+      <span id="time-section-label" class="section-label">3. 목표 수혈 시간 설정</span>
+      <!-- 제제별로 안전한 시간 버튼만 동적 렌더링 -->
+      <div class="quick-chips" id="time-chips"></div>
 
       <div class="time-inputs">
         <div class="input-row">
@@ -447,33 +493,39 @@
 
   <script>
     const CUSTOM_IO_KEY = "nurse_calc_blood_io_v1";
-    const BLOOD_DF = 15; // 수혈 세트 표준 점적계수 (15 gtt/mL)
+    const CUSTOM_DF_KEY = "nurse_calc_blood_df_v1";
+
+    let currentDF = parseFloat(localStorage.getItem(CUSTOM_DF_KEY)) || 15;
+
+    // 제제별 안전 시간 버튼 프리셋 (최소 ~ 권장 ~ 최대)
+    const TIME_PRESETS = {
+      PRBC: [
+        { label: "1시간 30분", hr: 1, min: 30 },
+        { label: "2시간 (권장)", hr: 2, min: 0 },
+        { label: "3시간", hr: 3, min: 0 },
+        { label: "4시간 (최대)", hr: 4, min: 0 }
+      ],
+      PC: [
+        { label: "10분", hr: 0, min: 10 },
+        { label: "15분 (권장)", hr: 0, min: 15 },
+        { label: "30분", hr: 0, min: 30 },
+        { label: "1시간 (1 dose)", hr: 1, min: 0 }
+      ],
+      FFP: [
+        { label: "30분", hr: 0, min: 30 },
+        { label: "1시간 (권장)", hr: 1, min: 0 },
+        { label: "2시간", hr: 2, min: 0 },
+        { label: "3시간 (실온 최대)", hr: 3, min: 0 }
+      ]
+    };
 
     const PRODUCTS = [
-      {
-        id: "prbc320", type: "PRBC", name: "PRBC 320mL", sub: "농축적혈구 (320 유래)",
-        defaultVol: 190, refRange: "공식 참고: 190±20 mL", defaultHr: 2, defaultMin: 0
-      },
-      {
-        id: "prbc400", type: "PRBC", name: "PRBC 400mL", sub: "농축적혈구 (400 유래)",
-        defaultVol: 250, refRange: "공식 참고: 250±25 mL", defaultHr: 2, defaultMin: 0
-      },
-      {
-        id: "pc320", type: "PC", name: "PC 320mL", sub: "농축혈소판 (320 유래)",
-        defaultVol: 40, refRange: "공식 참고: 40±5 mL", defaultHr: 0, defaultMin: 15
-      },
-      {
-        id: "pc400", type: "PC", name: "PC 400mL", sub: "농축혈소판 (400 유래)",
-        defaultVol: 50, refRange: "공식 참고: 50±5 mL", defaultHr: 0, defaultMin: 15
-      },
-      {
-        id: "ffp320", type: "FFP", name: "FFP 320mL", sub: "신선동결혈장 (320 유래)",
-        defaultVol: 150, refRange: "공식 참고: 150±30 mL 이상", defaultHr: 1, defaultMin: 0
-      },
-      {
-        id: "ffp400", type: "FFP", name: "FFP 400mL", sub: "신선동결혈장 (400 유래)",
-        defaultVol: 174, refRange: "공식 참고: 174±29 mL 이상", defaultHr: 1, defaultMin: 0
-      }
+      { id: "prbc320", type: "PRBC", name: "PRBC 320mL", defaultVol: 190, refRange: "공식 참고: 190±20 mL", defaultHr: 2, defaultMin: 0 },
+      { id: "prbc400", type: "PRBC", name: "PRBC 400mL", defaultVol: 250, refRange: "공식 참고: 250±25 mL", defaultHr: 2, defaultMin: 0 },
+      { id: "pc320", type: "PC", name: "PC 320mL", defaultVol: 40, refRange: "공식 참고: 40±5 mL", defaultHr: 0, defaultMin: 15 },
+      { id: "pc400", type: "PC", name: "PC 400mL", defaultVol: 50, refRange: "공식 참고: 50±5 mL", defaultHr: 0, defaultMin: 15 },
+      { id: "ffp320", type: "FFP", name: "FFP 320mL", defaultVol: 150, refRange: "공식 참고: 150±30 mL 이상", defaultHr: 1, defaultMin: 0 },
+      { id: "ffp400", type: "FFP", name: "FFP 400mL", defaultVol: 174, refRange: "공식 참고: 174±29 mL 이상", defaultHr: 1, defaultMin: 0 }
     ];
 
     const GUIDES = {
@@ -505,12 +557,49 @@
 
     let currentProd = PRODUCTS[0];
 
-    function getCustomIO() {
-      try {
-        return JSON.parse(localStorage.getItem(CUSTOM_IO_KEY)) || {};
-      } catch {
-        return {};
+    // ==================== 수혈 세트 DF 관리 ====================
+    function updateDFUI() {
+      document.getElementById("df-badge").textContent = `DF ${currentDF}`;
+      document.getElementById("time-section-label").textContent = `3. 목표 수혈 시간 설정 (수혈 세트 ${currentDF} gtt/mL 기준)`;
+      document.getElementById("custom-df-input").value = currentDF;
+
+      document.querySelectorAll(".df-chip").forEach(btn => {
+        btn.classList.toggle("active", parseFloat(btn.dataset.df) === currentDF);
+      });
+
+      // 첫 15분 관찰 속도 (50 mL/hr) 자동 환산 표시
+      const obsGtt = (50 * currentDF) / 60;
+      const obsSec = 60 / obsGtt;
+      document.getElementById("obs-banner").innerHTML = `
+        <strong>성인 수혈 첫 15분 관찰 속도:</strong> <strong>50 mL/hr</strong> (현재 ${currentDF} gtt/mL 세트 기준 약 <strong>${parseFloat(obsGtt.toFixed(1))} gtt/min</strong>, ${parseFloat(obsSec.toFixed(1))}초당 1방울)로 천천히 주입하며 급성 부작용을 확인합니다.
+      `;
+
+      calcTransfusion();
+    }
+
+    function setBloodDF(df) {
+      currentDF = df;
+      updateDFUI();
+    }
+
+    function onCustomDFInput() {
+      const val = parseFloat(document.getElementById("custom-df-input").value);
+      if (isFinite(val) && val > 0) {
+        currentDF = val;
+        updateDFUI();
       }
+    }
+
+    function saveHospitalDF() {
+      if (!isFinite(currentDF) || currentDF <= 0) return;
+      localStorage.setItem(CUSTOM_DF_KEY, String(currentDF));
+      alert(`내 병원 수혈 세트 규격이 ${currentDF} gtt/mL로 저장되었습니다.`);
+    }
+
+    // ==================== 제제 & I/O 관리 ====================
+    function getCustomIO() {
+      try { return JSON.parse(localStorage.getItem(CUSTOM_IO_KEY)) || {}; }
+      catch { return {}; }
     }
 
     function renderProducts() {
@@ -528,15 +617,24 @@
       }).join("");
     }
 
+    function renderTimeChips() {
+      const chips = TIME_PRESETS[currentProd.type];
+      document.getElementById("time-chips").innerHTML = chips.map(c => {
+        const totalMin = c.hr * 60 + c.min;
+        return `<button class="chip-btn" data-min="${totalMin}" onclick="setDuration(${c.hr}, ${c.min})">${c.label}</button>`;
+      }).join("");
+    }
+
     function selectProduct(id) {
       currentProd = PRODUCTS.find(p => p.id === id);
       const custom = getCustomIO();
       document.getElementById("pack-vol").value = custom[id] ?? currentProd.defaultVol;
       document.getElementById("pack-qty").value = 1;
       document.getElementById("io-ref-text").textContent = currentProd.refRange;
-      setDuration(currentProd.defaultHr, currentProd.defaultMin);
       renderProducts();
+      renderTimeChips();
       renderGuide();
+      setDuration(currentProd.defaultHr, currentProd.defaultMin);
     }
 
     function saveHospitalIO() {
@@ -586,10 +684,8 @@
 
       const totalMin = Math.round(hr * 60 + min);
 
-      // 현재 설정된 시간에 맞는 버튼에 빨간색(active) 표시
       document.querySelectorAll("#time-chips .chip-btn").forEach(btn => {
-        const chipMin = parseInt(btn.dataset.min, 10);
-        btn.classList.toggle("active", chipMin === totalMin);
+        btn.classList.toggle("active", parseInt(btn.dataset.min, 10) === totalMin);
       });
 
       const alertEl = document.getElementById("tf-alert");
@@ -603,24 +699,23 @@
       }
 
       const mlPerHr = totalVol / (totalMin / 60);
-      const gttPerMin = (mlPerHr * BLOOD_DF) / 60;
+      const gttPerMin = (mlPerHr * currentDF) / 60;
       const secPerGtt = 60 / gttPerMin;
 
       document.getElementById("res-ml").textContent = `${parseFloat(mlPerHr.toFixed(1))} cc/hr`;
       document.getElementById("res-gtt").textContent = `${Math.round(gttPerMin)} gtt/min`;
       document.getElementById("res-sec").textContent = `${parseFloat(secPerGtt.toFixed(2))}초/1방울`;
 
-      // 제제별 안전 경고 로직
       alertEl.style.display = "none";
       if (currentProd.type === "PRBC") {
         if (totalMin > 240) {
           alertEl.className = "alert-box alert-danger";
           alertEl.style.display = "block";
           alertEl.textContent = "⚠️ 4시간 초과 불가: PRBC는 실온 노출 시 세균 증식 및 용혈/오염 위험으로 인해 출고 후 4시간 이내에 완료해야 합니다.";
-        } else if (totalMin < 60) {
+        } else if (totalMin < 90) {
           alertEl.className = "alert-box alert-warn";
           alertEl.style.display = "block";
-          alertEl.textContent = "💡 급속 주입 주의: 대량 수혈 상황이 아니라면 순환과부하(TACO) 위험을 확인하세요.";
+          alertEl.textContent = "💡 급속 주입 주의 (1시간 30분 미만): 대량 출혈 상황이 아니라면 순환과부하(TACO) 위험을 반드시 확인하세요.";
         }
       } else if (currentProd.type === "FFP") {
         if (totalMin > 180) {
@@ -637,8 +732,9 @@
       }
     }
 
-    // 초기화 실행
+    // 초기 실행
     selectProduct("prbc320");
+    updateDFUI();
   </script>
 </body>
 </html>
