@@ -277,17 +277,48 @@
 
     .time-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
 
-    /* 결과 카드 */
-    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-    .result-card {
+    /* 양방향 속도 입력 카드 */
+    .rate-hint {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .rate-card {
       background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 12px 8px;
+      padding: 10px 6px;
       text-align: center;
+      transition: border-color 0.15s;
     }
-    .result-card span { display: block; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
-    .result-card strong { font-size: 1.02rem; color: var(--primary); }
+    .rate-card:focus-within {
+      border-color: var(--blood);
+      background: var(--card);
+    }
+    .rate-card label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .rate-card input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--primary);
+      outline: none;
+    }
+    .rate-card span {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
 
     /* 2단계 실전 투여 스케줄 박스 */
     .schedule-box {
@@ -300,11 +331,7 @@
       color: var(--primary);
       line-height: 1.55;
     }
-    .schedule-box h4 {
-      font-size: 0.84rem;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
+    .schedule-box h4 { font-size: 0.84rem; color: var(--accent); margin-bottom: 6px; }
     .pack-schedule-list {
       margin-top: 8px;
       padding-top: 8px;
@@ -397,21 +424,21 @@
         <span class="section-label">2. 1팩 용량 (병원 I/O 기준 수정 가능) &amp; 수량</span>
         <div class="io-row">
           <div class="input-row">
-            <input type="number" id="pack-vol" step="any" min="1" oninput="calcTransfusion()" />
+            <input type="number" id="pack-vol" step="any" min="1" oninput="calcTransfusion('time')" />
             <span class="unit-tag">mL / 팩</span>
           </div>
           <div class="input-row">
-            <input type="number" id="pack-qty" step="1" min="1" value="1" oninput="calcTransfusion()" />
+            <input type="number" id="pack-qty" step="1" min="1" value="1" oninput="onQtyManualInput()" />
             <span class="unit-tag">팩 (Unit)</span>
           </div>
         </div>
 
-        <!-- PC 선택 시 1 dose 원터치 수량 버튼 -->
+        <!-- PC 선택 시 모드별 원터치 버튼 (8팩 제거, 풀링 추가) -->
         <div id="pc-qty-chips" class="qty-chips">
-          <button class="chip-btn" data-qty="6" onclick="setPCQty(6, 1, 0)">6팩 (1 dose 권장)</button>
-          <button class="chip-btn" data-qty="5" onclick="setPCQty(5, 1, 0)">5팩 (1 dose)</button>
-          <button class="chip-btn" data-qty="8" onclick="setPCQty(8, 1, 0)">8팩</button>
-          <button class="chip-btn" data-qty="1" onclick="setPCQty(1, 0, 15)">1팩 단독</button>
+          <button class="chip-btn" data-mode="dose6" onclick="setPCMode('dose6')">6팩 (1 dose)</button>
+          <button class="chip-btn" data-mode="dose5" onclick="setPCMode('dose5')">5팩 (1 dose)</button>
+          <button class="chip-btn" data-mode="pack" onclick="setPCMode('pack')">1팩 단독</button>
+          <button class="chip-btn" data-mode="pool" onclick="setPCMode('pool')">풀링 1백 (300mL)</button>
         </div>
 
         <div class="io-actions">
@@ -433,27 +460,31 @@
 
       <div class="time-inputs">
         <div class="input-row">
-          <input type="number" id="dur-hr" min="0" value="2" oninput="calcTransfusion()" />
+          <input type="number" id="dur-hr" min="0" value="2" oninput="calcTransfusion('time')" />
           <span class="unit-tag">시간</span>
         </div>
         <div class="input-row">
-          <input type="number" id="dur-min" min="0" max="59" value="0" oninput="calcTransfusion()" />
+          <input type="number" id="dur-min" min="0" max="59" value="0" oninput="calcTransfusion('time')" />
           <span class="unit-tag">분</span>
         </div>
       </div>
 
+      <div class="rate-hint">💡 아래 속도나 방울 간격을 직접 입력하면 소요 시간이 자동 역산됩니다.</div>
       <div class="result-grid">
-        <div class="result-card">
-          <span>전체 평균 속도</span>
-          <strong id="res-ml">-</strong>
+        <div class="rate-card">
+          <label for="in-ml">전체 평균 속도</label>
+          <input type="number" id="in-ml" step="any" min="0" oninput="calcTransfusion('ml')" />
+          <span>cc/hr</span>
         </div>
-        <div class="result-card">
-          <span>평균 방울 수</span>
-          <strong id="res-gtt">-</strong>
+        <div class="rate-card">
+          <label for="in-gtt">평균 방울 수</label>
+          <input type="number" id="in-gtt" step="any" min="0" oninput="calcTransfusion('gtt')" />
+          <span>gtt/min</span>
         </div>
-        <div class="result-card">
-          <span>평균 방울 간격</span>
-          <strong id="res-sec">-</strong>
+        <div class="rate-card">
+          <label for="in-sec">평균 방울 간격</label>
+          <input type="number" id="in-sec" step="any" min="0" oninput="calcTransfusion('sec')" />
+          <span>초당 1방울</span>
         </div>
       </div>
 
@@ -471,8 +502,9 @@
     const CUSTOM_DF_KEY = "nurse_calc_blood_df_v1";
 
     let currentDF = parseFloat(localStorage.getItem(CUSTOM_DF_KEY)) || 15;
+    let pcMode = "dose6"; // 'dose6', 'dose5', 'pack', 'pool'
 
-    // 제제별 권장 시간(맨 앞 또는 강조) + 안전 옵션 버튼
+    // 제제 및 PC 모드별로 완전히 분리된 시간 버튼
     const TIME_PRESETS = {
       PRBC: [
         { label: "2시간 (권장)", hr: 2, min: 0 },
@@ -480,27 +512,39 @@
         { label: "3시간", hr: 3, min: 0 },
         { label: "4시간 (최대)", hr: 4, min: 0 }
       ],
-      PC: [
-        { label: "1시간 (1 dose 권장)", hr: 1, min: 0 },
-        { label: "45분 (옵션)", hr: 0, min: 45 },
-        { label: "30분 (옵션)", hr: 0, min: 30 },
-        { label: "15분 (1팩)", hr: 0, min: 15 },
-        { label: "10분 (1팩)", hr: 0, min: 10 },
-        { label: "5분 (빠른 연속)", hr: 0, min: 5 }
-      ],
       FFP: [
         { label: "1시간 (권장)", hr: 1, min: 0 },
         { label: "30분", hr: 0, min: 30 },
         { label: "2시간", hr: 2, min: 0 },
         { label: "3시간 (실온 최대)", hr: 3, min: 0 }
+      ],
+      PC_dose: [
+        { label: "1시간 (1 dose 권장)", hr: 1, min: 0 },
+        { label: "45분", hr: 0, min: 45 },
+        { label: "30분", hr: 0, min: 30 },
+        { label: "1시간 30분", hr: 1, min: 30 }
+      ],
+      PC_pack: [
+        { label: "5분", hr: 0, min: 5 },
+        { label: "8분", hr: 0, min: 8 },
+        { label: "10분 (권장)", hr: 0, min: 10 },
+        { label: "15분", hr: 0, min: 15 },
+        { label: "30분", hr: 0, min: 30 }
+      ],
+      PC_pool: [
+        { label: "1시간 (풀링 권장)", hr: 1, min: 0 },
+        { label: "45분", hr: 0, min: 45 },
+        { label: "30분", hr: 0, min: 30 },
+        { label: "1시간 30분", hr: 1, min: 30 },
+        { label: "2시간", hr: 2, min: 0 }
       ]
     };
 
     const PRODUCTS = [
       { id: "prbc320", type: "PRBC", name: "PRBC 320mL", defaultVol: 190, refRange: "공식 참고: 190±20 mL", defaultQty: 1, defaultHr: 2, defaultMin: 0 },
       { id: "prbc400", type: "PRBC", name: "PRBC 400mL", defaultVol: 250, refRange: "공식 참고: 250±25 mL", defaultQty: 1, defaultHr: 2, defaultMin: 0 },
-      { id: "pc320", type: "PC", name: "PC 320mL", defaultVol: 40, refRange: "공식 참고: 40±5 mL", defaultQty: 6, defaultHr: 1, defaultMin: 0 },
-      { id: "pc400", type: "PC", name: "PC 400mL", defaultVol: 50, refRange: "공식 참고: 50±5 mL", defaultQty: 6, defaultHr: 1, defaultMin: 0 },
+      { id: "pc320", type: "PC", name: "PC 320mL", defaultVol: 40, refRange: "공식 참고: 40±5 mL (풀링 200~300mL)", defaultQty: 6, defaultHr: 1, defaultMin: 0 },
+      { id: "pc400", type: "PC", name: "PC 400mL", defaultVol: 50, refRange: "공식 참고: 50±5 mL (풀링 200~300mL)", defaultQty: 6, defaultHr: 1, defaultMin: 0 },
       { id: "ffp320", type: "FFP", name: "FFP 320mL", defaultVol: 150, refRange: "공식 참고: 150±30 mL 이상", defaultQty: 1, defaultHr: 1, defaultMin: 0 },
       { id: "ffp400", type: "FFP", name: "FFP 400mL", defaultVol: 174, refRange: "공식 참고: 174±29 mL 이상", defaultQty: 1, defaultHr: 1, defaultMin: 0 }
     ];
@@ -515,11 +559,11 @@
         ]
       },
       PC: {
-        title: "PC (농축혈소판) 성인 수혈 가이드",
+        title: "PC (농축혈소판 · 풀링혈소판) 성인 수혈 가이드",
         items: [
-          "<strong>권장 시간:</strong> <strong>1 dose(5~6팩 연속 투여) = 30분~1시간(권장)</strong> — 국내 공식 가이드라인은 통상 <strong>60분</strong> 기준입니다.",
-          "<strong>임상 연속 투여법:</strong> 첫 15분간 50 mL/hr로 관찰한 뒤 부작용이 없으면, 나머지 팩들은 <strong>팩당 약 5~10분</strong> 간격으로 지연 없이 연속 투여합니다.",
-          "<strong>보관 및 구분:</strong> 실온(20~24℃) 보관·교반 제제이므로 <strong>냉장 보관 금지</strong>. 성분채혈혈소판(Apheresis PC, 200~250mL)은 별도 기준 적용."
+          "<strong>권장 시간:</strong> <strong>1 dose(5~6팩) 또는 풀링 1백 = 30분~1시간(공식 60분)</strong> 내외로 투여합니다.",
+          "<strong>풀링(Pooled PC) 기준:</strong> 5~6팩을 큰 백 1개(약 200~300mL)로 합친 제제이며, <strong>풀링 시점부터 최대 4시간 이내</strong>에 완료해야 합니다.",
+          "<strong>임상 연속 투여법:</strong> 첫 15분간 50 mL/hr 관찰 후 이상이 없으면, 일반 팩은 <strong>팩당 5~10분</strong> 간격으로 연속 투여합니다. (냉장 보관 금지)"
         ]
       },
       FFP: {
@@ -535,7 +579,7 @@
     let currentProd = PRODUCTS[0];
 
     function fmt(num, digits = 1) {
-      if (!isFinite(num) || isNaN(num)) return "-";
+      if (!isFinite(num) || isNaN(num)) return "";
       return parseFloat(num.toFixed(digits));
     }
 
@@ -555,7 +599,7 @@
         <strong>성인 수혈 첫 15분 관찰 속도:</strong> <strong>50 mL/hr</strong> (현재 ${currentDF} gtt/mL 세트 기준 약 <strong>${fmt(obsGtt, 1)} gtt/min</strong>, ${fmt(obsSec, 1)}초당 1방울)로 천천히 주입하며 급성 부작용을 확인합니다.
       `;
 
-      calcTransfusion();
+      calcTransfusion("time");
     }
 
     function setBloodDF(df) { currentDF = df; updateDFUI(); }
@@ -569,7 +613,7 @@
       alert(`내 병원 수혈 세트 규격이 ${currentDF} gtt/mL로 저장되었습니다.`);
     }
 
-    // ==================== 제제 & I/O 관리 ====================
+    // ==================== 제제 & 모드 관리 ====================
     function getCustomIO() {
       try { return JSON.parse(localStorage.getItem(CUSTOM_IO_KEY)) || {}; }
       catch { return {}; }
@@ -591,7 +635,13 @@
     }
 
     function renderTimeChips() {
-      const chips = TIME_PRESETS[currentProd.type];
+      let key = currentProd.type;
+      if (currentProd.type === "PC") {
+        if (pcMode === "pack") key = "PC_pack";
+        else if (pcMode === "pool") key = "PC_pool";
+        else key = "PC_dose";
+      }
+      const chips = TIME_PRESETS[key];
       document.getElementById("time-chips").innerHTML = chips.map(c => {
         const totalMin = c.hr * 60 + c.min;
         return `<button class="chip-btn" data-min="${totalMin}" onclick="setDuration(${c.hr}, ${c.min})">${c.label}</button>`;
@@ -605,7 +655,9 @@
       document.getElementById("pack-qty").value = currentProd.defaultQty;
       document.getElementById("io-ref-text").textContent = currentProd.refRange;
 
-      document.getElementById("pc-qty-chips").classList.toggle("show", currentProd.type === "PC");
+      const isPC = currentProd.type === "PC";
+      document.getElementById("pc-qty-chips").classList.toggle("show", isPC);
+      if (isPC) pcMode = "dose6";
 
       renderProducts();
       renderTimeChips();
@@ -613,9 +665,45 @@
       setDuration(currentProd.defaultHr, currentProd.defaultMin);
     }
 
-    function setPCQty(qty, hr, min) {
-      document.getElementById("pack-qty").value = qty;
-      setDuration(hr, min);
+    function setPCMode(mode) {
+      pcMode = mode;
+      const custom = getCustomIO();
+      const baseVol = custom[currentProd.id] ?? currentProd.defaultVol;
+
+      if (mode === "dose6") {
+        document.getElementById("pack-vol").value = baseVol;
+        document.getElementById("pack-qty").value = 6;
+        renderTimeChips();
+        setDuration(1, 0);
+      } else if (mode === "dose5") {
+        document.getElementById("pack-vol").value = baseVol;
+        document.getElementById("pack-qty").value = 5;
+        renderTimeChips();
+        setDuration(1, 0);
+      } else if (mode === "pack") {
+        document.getElementById("pack-vol").value = baseVol;
+        document.getElementById("pack-qty").value = 1;
+        renderTimeChips();
+        setDuration(0, 10);
+      } else if (mode === "pool") {
+        document.getElementById("pack-vol").value = 300;
+        document.getElementById("pack-qty").value = 1;
+        renderTimeChips();
+        setDuration(1, 0);
+      }
+    }
+
+    function onQtyManualInput() {
+      if (currentProd.type === "PC") {
+        const q = parseInt(document.getElementById("pack-qty").value, 10) || 1;
+        if (q === 6) pcMode = "dose6";
+        else if (q === 5) pcMode = "dose5";
+        else if (q === 1 && parseFloat(document.getElementById("pack-vol").value) >= 150) pcMode = "pool";
+        else if (q === 1) pcMode = "pack";
+        else pcMode = "dose6";
+        renderTimeChips();
+      }
+      calcTransfusion("time");
     }
 
     function saveHospitalIO() {
@@ -634,13 +722,13 @@
       localStorage.setItem(CUSTOM_IO_KEY, JSON.stringify(custom));
       document.getElementById("pack-vol").value = currentProd.defaultVol;
       renderProducts();
-      calcTransfusion();
+      calcTransfusion("time");
     }
 
     function setDuration(hr, min) {
       document.getElementById("dur-hr").value = hr;
       document.getElementById("dur-min").value = min;
-      calcTransfusion();
+      calcTransfusion("time");
     }
 
     function renderGuide() {
@@ -655,51 +743,84 @@
       `;
     }
 
-    function calcTransfusion() {
+    // ==================== 양방향 계산 (시간 ↔ 속도/방울/초) ====================
+    function calcTransfusion(source) {
       const packVol = parseFloat(document.getElementById("pack-vol").value);
       const qty = parseInt(document.getElementById("pack-qty").value, 10) || 1;
-      const hr = parseFloat(document.getElementById("dur-hr").value) || 0;
-      const min = parseFloat(document.getElementById("dur-min").value) || 0;
-
       const totalVol = isFinite(packVol) && packVol > 0 ? packVol * qty : 0;
-      document.getElementById("total-vol-display").textContent = totalVol > 0 ? `${fmt(totalVol, 1)} mL (${qty}팩)` : "-";
 
-      // PC 수량 칩 활성화 표시
+      document.getElementById("total-vol-display").textContent =
+        totalVol > 0 ? `${fmt(totalVol, 1)} mL (${pcMode === "pool" && currentProd.type === "PC" ? "풀링 1백" : `${qty}팩`})` : "-";
+
+      // PC 모드 칩 활성화 표시
       document.querySelectorAll("#pc-qty-chips .chip-btn").forEach(btn => {
-        btn.classList.toggle("active", parseInt(btn.dataset.qty, 10) === qty);
+        btn.classList.toggle("active", btn.dataset.mode === pcMode);
       });
 
-      const totalMin = Math.round(hr * 60 + min);
+      const hrEl = document.getElementById("dur-hr");
+      const minEl = document.getElementById("dur-min");
+      const mlEl = document.getElementById("in-ml");
+      const gttEl = document.getElementById("in-gtt");
+      const secEl = document.getElementById("in-sec");
+      const alertEl = document.getElementById("tf-alert");
+      const schedEl = document.getElementById("schedule-box");
+
+      if (totalVol <= 0) {
+        alertEl.style.display = "none";
+        schedEl.style.display = "none";
+        return;
+      }
+
+      let mlPerHr = NaN;
+      let totalMin = NaN;
+
+      if (source === "time") {
+        const hr = parseFloat(hrEl.value) || 0;
+        const min = parseFloat(minEl.value) || 0;
+        totalMin = Math.round(hr * 60 + min);
+        if (totalMin > 0) mlPerHr = totalVol / (totalMin / 60);
+      } else if (source === "ml") {
+        mlPerHr = parseFloat(mlEl.value);
+      } else if (source === "gtt") {
+        const g = parseFloat(gttEl.value);
+        if (g > 0) mlPerHr = (g * 60) / currentDF;
+      } else if (source === "sec") {
+        const s = parseFloat(secEl.value);
+        if (s > 0) mlPerHr = ((60 / s) * 60) / currentDF;
+      }
+
+      if (!isFinite(mlPerHr) || mlPerHr <= 0) {
+        if (source !== "ml") mlEl.value = "";
+        if (source !== "gtt") gttEl.value = "";
+        if (source !== "sec") secEl.value = "";
+        alertEl.style.display = "none";
+        schedEl.style.display = "none";
+        return;
+      }
+
+      const gttPerMin = (mlPerHr * currentDF) / 60;
+      const secPerGtt = 60 / gttPerMin;
+
+      // 속도에서 역산한 경우 시간/분 자동 업데이트
+      if (source !== "time") {
+        totalMin = Math.round((totalVol / mlPerHr) * 60);
+        hrEl.value = Math.floor(totalMin / 60);
+        minEl.value = totalMin % 60;
+      }
+
+      if (source !== "ml") mlEl.value = fmt(mlPerHr, 1);
+      if (source !== "gtt") gttEl.value = Math.round(gttPerMin);
+      if (source !== "sec") secEl.value = fmt(secPerGtt, 2);
 
       // 시간 칩 활성화 표시
       document.querySelectorAll("#time-chips .chip-btn").forEach(btn => {
         btn.classList.toggle("active", parseInt(btn.dataset.min, 10) === totalMin);
       });
 
-      const alertEl = document.getElementById("tf-alert");
-      const schedEl = document.getElementById("schedule-box");
-
-      if (totalVol <= 0 || totalMin <= 0) {
-        document.getElementById("res-ml").textContent = "-";
-        document.getElementById("res-gtt").textContent = "-";
-        document.getElementById("res-sec").textContent = "-";
-        alertEl.style.display = "none";
-        schedEl.style.display = "none";
-        return;
-      }
-
-      const mlPerHr = totalVol / (totalMin / 60);
-      const gttPerMin = (mlPerHr * currentDF) / 60;
-      const secPerGtt = 60 / gttPerMin;
-
-      document.getElementById("res-ml").textContent = `${fmt(mlPerHr, 1)} cc/hr`;
-      document.getElementById("res-gtt").textContent = `${Math.round(gttPerMin)} gtt/min`;
-      document.getElementById("res-sec").textContent = `${fmt(secPerGtt, 2)}초/1방울`;
-
-      // ==================== 실전 2단계 스케줄 계산 (첫 15분 50 mL/hr 반영) ====================
+      // ==================== 실전 2단계 스케줄 계산 ====================
       let stage2Rate = mlPerHr;
       if (totalMin > 15 && totalVol > 12.5) {
-        const first15Vol = 12.5; // 50 mL/hr × 0.25 hr
+        const first15Vol = 12.5;
         const remainVol = totalVol - first15Vol;
         const remainMin = totalMin - 15;
         stage2Rate = remainVol / (remainMin / 60);
@@ -712,7 +833,6 @@
           • <strong>2단계 (15분~완료):</strong> <strong>${fmt(stage2Rate, 1)} cc/hr</strong> (${Math.round(stage2Gtt)} gtt/min, ${fmt(stage2Sec, 2)}초/1방울)
         `;
 
-        // 2팩 이상일 때 1팩 ~ N팩별 예상 소요 시간 표시
         if (qty > 1) {
           const mlPerMinStage2 = stage2Rate / 60;
           const pack1RemainVol = Math.max(0, packVol - first15Vol);
@@ -755,14 +875,18 @@
           alertEl.textContent = "⚠️ 실온 3시간 초과 주의: FFP는 해동 후 실온에서 3시간 이내 사용을 권장합니다. (냉장 보관 시 24시간 이내)";
         }
       } else if (currentProd.type === "PC") {
-        if (qty >= 5 && stage2Rate > 450) {
+        if (totalMin > 240) {
           alertEl.className = "alert-box alert-danger";
           alertEl.style.display = "block";
-          alertEl.textContent = `⚠️ 과속 주입 위험 (본 속도 ${fmt(stage2Rate, 0)} cc/hr): 첫 15분 관찰을 포함해 ${qty}팩을 ${totalMin}분 안에 완료하는 것은 매우 빠릅니다. 순환과부하(TACO) 방지를 위해 1시간(60분) 설정을 권장합니다.`;
+          alertEl.textContent = "⚠️ 4시간 초과 불가: 혈소판(특히 풀링 제제)은 실온 보관 제제로 출고/풀링 후 최대 4시간 이내에 완료해야 합니다.";
+        } else if ((qty >= 5 || pcMode === "pool") && stage2Rate > 450) {
+          alertEl.className = "alert-box alert-danger";
+          alertEl.style.display = "block";
+          alertEl.textContent = `⚠️ 과속 주입 위험 (본 속도 ${fmt(stage2Rate, 0)} cc/hr): 첫 15분 관찰을 포함해 ${totalMin}분 안에 완료하는 것은 매우 빠릅니다. 순환과부하(TACO) 방지를 위해 1시간(60분) 설정을 권장합니다.`;
         } else if (totalMin > 90) {
           alertEl.className = "alert-box alert-warn";
           alertEl.style.display = "block";
-          alertEl.textContent = "💡 혈소판 지연 투여 주의: 1 dose(5~6팩) 기준 통상 30분~1시간(공식 60분) 내외로 지연 없이 투여하는 것을 권장합니다.";
+          alertEl.textContent = "💡 혈소판 지연 투여 주의: 1 dose(5~6팩) 및 풀링 제제는 통상 30분~1시간(공식 60분) 내외로 지연 없이 투여하는 것을 권장합니다.";
         }
       }
     }
