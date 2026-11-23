@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>임상 간호 수액·약물 계산기 (Pro)</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --primary: #0f172a;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --warn: #d97706;
+      --warn-soft: #fffbeb;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 20px 16px 48px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    header h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .lite-link {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .lite-link:hover { background: #f1f5f9; }
+
+    /* 탭 메뉴 */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+      background: #f1f5f9;
+    }
+
+    .tab-btn {
+      padding: 14px;
+      border: none;
+      background: transparent;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+      background: var(--card);
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-content.active { display: block; }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 20px 0;
+    }
+
+    /* 수액 세트 선택 버튼 */
+    .df-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .df-btn {
+      padding: 10px 6px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .df-btn strong { display: block; font-size: 0.9rem; color: var(--primary); }
+    .df-btn span { font-size: 0.72rem; color: var(--text-muted); }
+
+    .df-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .df-btn.active strong { color: var(--accent); }
+
+    /* 입력 필드 */
+    .input-group { margin-bottom: 12px; }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .input-row:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .input-row input {
+      flex: 1;
+      border: none;
+      padding: 11px 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      outline: none;
+      width: 100%;
+    }
+
+    .input-row input:disabled {
+      background: #f8fafc;
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .unit-tag {
+      padding: 0 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: #f8fafc;
+      border-left: 1px solid var(--border);
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .unit-select {
+      border: none;
+      border-left: 1px solid var(--border);
+      background: #f8fafc;
+      padding: 0 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      align-self: stretch;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* 종료 예상 시간 박스 */
+    .sub-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .quick-chips {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chip-btn {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .chip-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .eta-result {
+      padding: 10px 12px;
+      background: var(--accent-soft);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .eta-result strong { color: var(--accent); font-size: 0.98rem; }
+
+    /* 약물 스펙 & 프리셋 */
+    .stock-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .preset-save-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .preset-save-row input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .save-btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .save-btn:hover { background: #334155; }
+
+    .preset-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .preset-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    .preset-item:hover { border-color: var(--accent); }
+    .preset-del {
+      color: var(--text-muted);
+      font-weight: 700;
+      padding-left: 2px;
+    }
+    .preset-del:hover { color: var(--danger); }
+
+    /* 계산식 & 경고 박스 */
+    .formula-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .formula-box strong { color: var(--primary); }
+
+    .alert-box {
+      display: none;
+      margin-top: 12px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .alert-danger {
+      background: var(--danger-soft);
+      border: 1px solid #fecaca;
+      color: var(--danger);
+    }
+    .alert-warn {
+      background: var(--warn-soft);
+      border: 1px solid #fde68a;
+      color: var(--warn);
+    }
+
+    .clear-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .clear-btn:hover { background: #f1f5f9; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <div class="header-left">
+        <h1>임상 수액·약물 계산기</h1>
+        <span class="badge">Pro v2.0</span>
+      </div>
+      <a href="index.html" class="lite-link">기본형</a>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('iv')">수액 속도 (IV Drip)</button>
+      <button class="tab-btn" onclick="switchTab('drug')">약물 용량 (Dosage)</button>
+    </div>
+
+    <!-- 탭 1: 수액 속도 + 종료 예상 시간 -->
+    <div id="tab-iv" class="tab-content active">
+      <span class="section-label">1. 수액 세트 규격 (Drop Factor)</span>
+      <div class="df-group">
+        <button class="df-btn active" onclick="setDropFactor(20, this)">
+          <strong>20 gtt/mL</strong><span>성인 표준</span>
+        </button>
+        <button class="df-btn" onclick="setDropFactor(60, this)">
+          <strong>60 gtt/mL</strong><span>소아 / 정밀</span>
+        </button>
+        <button class="df-btn" onclick="setDropFactor(15, this)">
+          <strong>15 gtt/mL</strong><span>수혈 / 특수</span>
+        </button>
+      </div>
+
+      <span class="section-label">2. 주입 속도 (어느 칸이든 하나만 입력)</span>
+      <div class="input-group">
+        <div class="input-row">
+          <input type="number" id="iv-ml" step="any" min="0" placeholder="예: 180" oninput="calcIV('ml')" />
+          <span class="unit-tag">cc/hr (mL/hr)</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <input type="number" id="iv-gtt" step="any" min="0" placeholder="예: 60" oninput="calcIV('gtt')" />
+          <span class="unit-tag">gtt/min</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <input type="number" id="iv-sec" step="any" min="0" placeholder="예: 1" oninput="calcIV('sec')" />
+          <span class="unit-tag">초당 1방울</span>
+        </div>
+      </div>
+
+      <div id="iv-alert" class="alert-box"></div>
+      <div id="iv-formula" class="formula-box">값을 입력하면 계산 과정이 표시됩니다.</div>
+
+      <hr class="divider" />
+
+      <!-- 2단계 신규: 수액 종료 예상 시간 -->
+      <div class="sub-box">
+        <span class="section-label">3. 수액 종료 예상 시간 계산</span>
+        <div class="quick-chips">
+          <button class="chip-btn" onclick="setTotalVol(100)">100 mL</button>
+          <button class="chip-btn" onclick="setTotalVol(250)">250 mL</button>
+          <button class="chip-btn" onclick="setTotalVol(500)">500 mL</button>
+          <button class="chip-btn" onclick="setTotalVol(1000)">1000 mL</button>
+        </div>
+        <div class="time-grid">
+          <div class="input-row">
+            <input type="number" id="iv-total-vol" step="any" min="0" placeholder="총 용량" oninput="calcETA()" />
+            <span class="unit-tag">mL</span>
+          </div>
+          <div class="input-row">
+            <input type="time" id="iv-start-time" onchange="calcETA()" />
+          </div>
+        </div>
+        <div id="iv-eta-result" class="eta-result">
+          <span>종료 예정 시각</span>
+          <strong>-</strong>
+        </div>
+      </div>
+
+      <button class="clear-btn" onclick="clearIV()">전체 초기화 (Clear All)</button>
+    </div>
+
+    <!-- 탭 2: 약물 용량 + 나만의 프리셋 -->
+    <div id="tab-drug" class="tab-content">
+      <div class="sub-box" style="margin-bottom: 16px;">
+        <span class="section-label">1. 보유 약물 스펙 (1앰플 전체 기준)</span>
+        <div class="stock-grid">
+          <div class="input-row">
+            <input type="number" id="stock-vol" step="any" min="0" placeholder="용량 (예: 5)" oninput="calcDrug('stock')" />
+            <span class="unit-tag">cc</span>
+          </div>
+          <div class="input-row">
+            <input type="number" id="stock-dose" step="any" min="0" placeholder="함량 (선택)" oninput="calcDrug('stock')" />
+            <select id="stock-unit" class="unit-select" onchange="syncUnits(); calcDrug('stock')">
+              <option value="mg">mg</option>
+              <option value="g">g</option>
+              <option value="mcg">mcg</option>
+              <option value="Unit">Unit</option>
+              <option value="mEq">mEq</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 2단계 신규: 나만의 프리셋 저장 -->
+        <div class="preset-save-row">
+          <input type="text" id="preset-name" placeholder="프리셋 이름 (예: 진통제 5cc)" />
+          <button class="save-btn" onclick="savePreset()">저장</button>
+        </div>
+        <div id="preset-list" class="preset-list"></div>
+      </div>
+
+      <span class="section-label">2. 처방 또는 투여량 입력 (자동 변환)</span>
+      <div class="input-group">
+        <div class="input-row">
+          <input type="number" id="drug-amp" step="any" min="0" placeholder="예: 0.5" oninput="calcDrug('amp')" />
+          <span class="unit-tag">앰플 (amp)</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <input type="number" id="drug-cc" step="any" min="0" placeholder="예: 2.5" oninput="calcDrug('cc')" />
+          <span class="unit-tag">투여량 (cc/mL)</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <input type="number" id="drug-dose" step="any" min="0" placeholder="상단 함량 입력 시 활성화" disabled oninput="calcDrug('dose')" />
+          <select id="order-unit" class="unit-select" disabled onchange="calcDrug('dose')">
+            <option value="mg">mg</option>
+            <option value="g">g</option>
+            <option value="mcg">mcg</option>
+            <option value="Unit">Unit</option>
+            <option value="mEq">mEq</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="drug-alert" class="alert-box"></div>
+      <div id="drug-formula" class="formula-box">1앰플 용량(cc)을 먼저 입력하거나 저장된 프리셋을 선택하세요.</div>
+
+      <button class="clear-btn" onclick="clearDrug()">전체 초기화 (Clear All)</button>
+    </div>
+  </div>
+
+  <script>
+    function fmt(num, digits = 2) {
+      if (!isFinite(num) || isNaN(num)) return "";
+      return parseFloat(num.toFixed(digits));
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-btn").forEach((b, idx) => {
+        b.classList.toggle("active", (tab === "iv" && idx === 0) || (tab === "drug" && idx === 1));
+      });
+      document.getElementById("tab-iv").classList.toggle("active", tab === "iv");
+      document.getElementById("tab-drug").classList.toggle("active", tab === "drug");
+    }
+
+    // 현재 시각 기본 세팅
+    function setNowTime() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      document.getElementById("iv-start-time").value = `${hh}:${mm}`;
+    }
+
+    // ==================== 1. 수액 계산기 + 종료 예상 시간 ====================
+    let currentDF = 20;
+
+    function setDropFactor(df, btn) {
+      currentDF = df;
+      document.querySelectorAll(".df-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      calcIV("df");
+    }
+
+    function calcIV(source) {
+      const mlEl = document.getElementById("iv-ml");
+      const gttEl = document.getElementById("iv-gtt");
+      const secEl = document.getElementById("iv-sec");
+      const formulaEl = document.getElementById("iv-formula");
+      const alertEl = document.getElementById("iv-alert");
+
+      let baseMl = NaN;
+      if (source === "ml" || source === "df") {
+        baseMl = parseFloat(mlEl.value);
+      } else if (source === "gtt") {
+        const gttVal = parseFloat(gttEl.value);
+        if (gttVal > 0) baseMl = (gttVal * 60) / currentDF;
+      } else if (source === "sec") {
+        const secVal = parseFloat(secEl.value);
+        if (secVal > 0) baseMl = ((60 / secVal) * 60) / currentDF;
+      }
+
+      if (!isFinite(baseMl) || baseMl <= 0) {
+        if (source !== "ml") mlEl.value = "";
+        if (source !== "gtt") gttEl.value = "";
+        if (source !== "sec") secEl.value = "";
+        formulaEl.innerHTML = "값을 입력하면 계산 과정이 표시됩니다.";
+        alertEl.style.display = "none";
+        calcETA();
+        return;
+      }
+
+      const gtt = (baseMl * currentDF) / 60;
+      const sec = 60 / gtt;
+
+      if (source !== "ml") mlEl.value = fmt(baseMl, 1);
+      if (source !== "gtt") gttEl.value = fmt(gtt, 1);
+      if (source !== "sec") secEl.value = fmt(sec, 2);
+
+      formulaEl.innerHTML = `
+        <strong>계산식 (DF ${currentDF} 기준):</strong><br>
+        • ${fmt(baseMl, 1)} cc/hr × ${currentDF} ÷ 60 = <strong>${Math.round(gtt)} gtt/min</strong> (정밀값 ${fmt(gtt, 1)})<br>
+        • 60초 ÷ ${fmt(gtt, 1)} gtt = <strong>${fmt(sec, 2)}초당 1방울</strong>
+      `;
+
+      // 강화된 이상치 경고
+      if (gtt > 120 || baseMl > 1000) {
+        alertEl.className = "alert-box alert-danger";
+        alertEl.style.display = "block";
+        alertEl.textContent = "⚠️ 주입 속도가 매우 빠릅니다 (120 gtt/min 또는 1000 cc/hr 초과). 처방과 DF 규격을 재확인하세요.";
+      } else if (baseMl < 5) {
+        alertEl.className = "alert-box alert-warn";
+        alertEl.style.display = "block";
+        alertEl.textContent = "💡 주입 속도가 매우 느립니다 (5 cc/hr 미만). 정맥 라인 막힘(Occlusion)에 주의하세요.";
+      } else {
+        alertEl.style.display = "none";
+      }
+
+      calcETA();
+    }
+
+    function setTotalVol(vol) {
+      document.getElementById("iv-total-vol").value = vol;
+      calcETA();
+    }
+
+    function calcETA() {
+      const rate = parseFloat(document.getElementById("iv-ml").value);
+      const totalVol = parseFloat(document.getElementById("iv-total-vol").value);
+      const startTimeStr = document.getElementById("iv-start-time").value;
+      const resEl = document.getElementById("iv-eta-result");
+
+      if (!isFinite(rate) || rate <= 0 || !isFinite(totalVol) || totalVol <= 0 || !startTimeStr) {
+        resEl.innerHTML = `<span>종료 예정 시각</span><strong>-</strong>`;
+        return;
+      }
+
+      const totalMinutes = Math.round((totalVol / rate) * 60);
+      const durH = Math.floor(totalMinutes / 60);
+      const durM = totalMinutes % 60;
+
+      const [startH, startM] = startTimeStr.split(":").map(Number);
+      const startDate = new Date();
+      startDate.setHours(startH, startM, 0, 0);
+
+      const endDate = new Date(startDate.getTime() + totalMinutes * 60000);
+      const dayDiff = Math.floor((endDate.getTime() - new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime()) / 86400000);
+
+      const endH = endDate.getHours();
+      const endM = String(endDate.getMinutes()).padStart(2, "0");
+      const ampm = endH >= 12 ? "오후" : "오전";
+      const h12 = endH % 12 === 0 ? 12 : endH % 12;
+
+      const dayPrefix = dayDiff === 1 ? "내일 " : dayDiff > 1 ? `+${dayDiff}일 ` : "";
+      const durText = durH > 0 ? `${durH}시간 ${durM}분 소요` : `${durM}분 소요`;
+
+      resEl.innerHTML = `<span>${durText}</span><strong>${dayPrefix}${ampm} ${h12}:${endM}</strong>`;
+    }
+
+    function clearIV() {
+      document.getElementById("iv-ml").value = "";
+      document.getElementById("iv-gtt").value = "";
+      document.getElementById("iv-sec").value = "";
+      document.getElementById("iv-total-vol").value = "";
+      setNowTime();
+      document.getElementById("iv-formula").innerHTML = "값을 입력하면 계산 과정이 표시됩니다.";
+      document.getElementById("iv-alert").style.display = "none";
+      calcETA();
+    }
+
+    // ==================== 2. 약물 계산기 + 나만의 프리셋 ====================
+    const PRESET_KEY = "nurse_calc_presets_v2";
+    const weightFactors = { g: 1000, mg: 1, mcg: 0.001 };
+
+    function loadPresets() {
+      try {
+        return JSON.parse(localStorage.getItem(PRESET_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function renderPresets() {
+      const listEl = document.getElementById("preset-list");
+      const presets = loadPresets();
+      if (presets.length === 0) {
+        listEl.innerHTML = `<span style="font-size:0.76rem; color:var(--text-muted);">저장된 프리셋이 없습니다. 자주 쓰는 앰플 스펙을 저장해 보세요.</span>`;
+        return;
+      }
+
+      listEl.innerHTML = presets.map(p => {
+        const spec = p.dose ? `${p.dose}${p.unit}/${p.vol}cc` : `${p.vol}cc`;
+        return `
+          <div class="preset-item" onclick="applyPreset('${p.id}')">
+            <span>${p.name} (${spec})</span>
+            <span class="preset-del" onclick="deletePreset(event, '${p.id}')">×</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function savePreset() {
+      const name = document.getElementById("preset-name").value.trim();
+      const vol = parseFloat(document.getElementById("stock-vol").value);
+      const dose = parseFloat(document.getElementById("stock-dose").value);
+      const unit = document.getElementById("stock-unit").value;
+
+      if (!name || !isFinite(vol) || vol <= 0) {
+        alert("프리셋 이름과 1앰플 용량(cc)을 먼저 입력해 주세요.");
+        return;
+      }
+
+      const presets = loadPresets();
+      presets.push({
+        id: String(Date.now()),
+        name,
+        vol,
+        dose: isFinite(dose) && dose > 0 ? dose : null,
+        unit
+      });
+      localStorage.setItem(PRESET_KEY, JSON.stringify(presets));
+      document.getElementById("preset-name").value = "";
+      renderPresets();
+    }
+
+    function applyPreset(id) {
+      const p = loadPresets().find(item => item.id === id);
+      if (!p) return;
+      document.getElementById("stock-vol").value = p.vol;
+      document.getElementById("stock-dose").value = p.dose || "";
+      document.getElementById("stock-unit").value = p.unit || "mg";
+      syncUnits();
+      calcDrug("stock");
+    }
+
+    function deletePreset(e, id) {
+      e.stopPropagation();
+      const presets = loadPresets().filter(item => item.id !== id);
+      localStorage.setItem(PRESET_KEY, JSON.stringify(presets));
+      renderPresets();
+    }
+
+    function syncUnits() {
+      const sUnit = document.getElementById("stock-unit").value;
+      const oUnitEl = document.getElementById("order-unit");
+      const isWeight = sUnit in weightFactors;
+
+      Array.from(oUnitEl.options).forEach(opt => {
+        opt.disabled = isWeight ? !(opt.value in weightFactors) : opt.value !== sUnit;
+      });
+
+      if (!isWeight || !(oUnitEl.value in weightFactors)) {
+        oUnitEl.value = sUnit;
+      }
+    }
+
+    function calcDrug(source) {
+      const sVol = parseFloat(document.getElementById("stock-vol").value);
+      const sDose = parseFloat(document.getElementById("stock-dose").value);
+      const sUnit = document.getElementById("stock-unit").value;
+      const oUnit = document.getElementById("order-unit").value;
+
+      const ampEl = document.getElementById("drug-amp");
+      const ccEl = document.getElementById("drug-cc");
+      const doseEl = document.getElementById("drug-dose");
+      const oUnitEl = document.getElementById("order-unit");
+      const formulaEl = document.getElementById("drug-formula");
+      const alertEl = document.getElementById("drug-alert");
+
+      const hasDose = isFinite(sDose) && sDose > 0;
+      doseEl.disabled = !hasDose;
+      oUnitEl.disabled = !hasDose;
+      doseEl.placeholder = hasDose ? `예: ${fmt(sDose / 2, 2)}` : "상단 함량 입력 시 활성화";
+      if (!hasDose) doseEl.value = "";
+
+      if (!isFinite(sVol) || sVol <= 0) {
+        formulaEl.innerHTML = "1앰플 용량(cc)을 먼저 입력하거나 저장된 프리셋을 선택하세요.";
+        alertEl.style.display = "none";
+        return;
+      }
+
+      let unitRatio = 1;
+      if (sUnit in weightFactors && oUnit in weightFactors) {
+        unitRatio = weightFactors[oUnit] / weightFactors[sUnit];
+      }
+
+      let baseRatio = NaN;
+      if (source === "amp") {
+        baseRatio = parseFloat(ampEl.value);
+      } else if (source === "cc") {
+        const ccVal = parseFloat(ccEl.value);
+        if (ccVal > 0) baseRatio = ccVal / sVol;
+      } else if (source === "dose" && hasDose) {
+        const dVal = parseFloat(doseEl.value);
+        if (dVal > 0) baseRatio = (dVal * unitRatio) / sDose;
+      } else if (source === "stock") {
+        if (parseFloat(ampEl.value) > 0) baseRatio = parseFloat(ampEl.value);
+        else if (parseFloat(ccEl.value) > 0) baseRatio = parseFloat(ccEl.value) / sVol;
+      }
+
+      if (!isFinite(baseRatio) || baseRatio <= 0) {
+        if (source !== "amp") ampEl.value = "";
+        if (source !== "cc") ccEl.value = "";
+        if (source !== "dose") doseEl.value = "";
+        formulaEl.innerHTML = "투여할 앰플 수, 용량(cc), 또는 함량 중 하나를 입력하세요.";
+        alertEl.style.display = "none";
+        return;
+      }
+
+      const giveCc = baseRatio * sVol;
+      const giveDoseInOrderUnit = hasDose ? (baseRatio * sDose) / unitRatio : NaN;
+
+      if (source !== "amp") ampEl.value = fmt(baseRatio, 3);
+      if (source !== "cc") ccEl.value = fmt(giveCc, 2);
+      if (source !== "dose" && hasDose) doseEl.value = fmt(giveDoseInOrderUnit, 3);
+
+      let formulaHTML = `<strong>계산식:</strong><br>• ${fmt(baseRatio, 3)} amp × ${sVol} cc = <strong>${fmt(giveCc, 2)} cc</strong>`;
+      if (hasDose) {
+        formulaHTML += `<br>• 처방 함량: <strong>${fmt(giveDoseInOrderUnit, 3)} ${oUnit}</strong> (1앰플 = ${sDose} ${sUnit})`;
+      }
+      formulaEl.innerHTML = formulaHTML;
+
+      // 강화된 이상치 경고
+      if (baseRatio > 5) {
+        alertEl.className = "alert-box alert-danger";
+        alertEl.style.display = "block";
+        alertEl.textContent = "⚠️ 1회 투여량이 5앰플을 초과합니다. 소수점과 단위를 반드시 재확인하세요.";
+      } else if (baseRatio < 0.05) {
+        alertEl.className = "alert-box alert-warn";
+        alertEl.style.display = "block";
+        alertEl.textContent = "💡 투여량이 0.05앰플 미만으로 매우 적습니다. 희석(Dilution) 또는 1cc 정밀 주사기 사용을 확인하세요.";
+      } else {
+        alertEl.style.display = "none";
+      }
+    }
+
+    function clearDrug() {
+      document.getElementById("stock-vol").value = "";
+      document.getElementById("stock-dose").value = "";
+      document.getElementById("drug-amp").value = "";
+      document.getElementById("drug-cc").value = "";
+      document.getElementById("drug-dose").value = "";
+      document.getElementById("drug-dose").disabled = true;
+      document.getElementById("order-unit").disabled = true;
+      document.getElementById("drug-formula").innerHTML = "1앰플 용량(cc)을 먼저 입력하거나 저장된 프리셋을 선택하세요.";
+      document.getElementById("drug-alert").style.display = "none";
+    }
+
+    // 초기 실행
+    setNowTime();
+    renderPresets();
+  </script>
+</body>
+</html>
