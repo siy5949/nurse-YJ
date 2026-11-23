@@ -44,228 +44,61 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
-    header h1 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    header h1 { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
 
-    .badge {
-      font-size: 0.72rem;
+    .nav-links { display: flex; gap: 6px; }
+    .nav-link {
+      font-size: 0.76rem;
       font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    .pro-link {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--accent);
+      color: var(--text-muted);
       text-decoration: none;
-      padding: 4px 10px;
-      border: 1px solid var(--accent);
+      padding: 4px 9px;
+      border: 1px solid var(--border);
       border-radius: 6px;
+      background: var(--card);
+    }
+    .nav-link:hover { background: #f1f5f9; }
+    .nav-link.active {
+      color: var(--accent);
+      border-color: var(--accent);
       background: var(--accent-soft);
     }
-    .pro-link:hover { background: #dbeafe; }
 
-    /* 탭 메뉴 */
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-bottom: 1px solid var(--border);
-      background: #f1f5f9;
-    }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); background: #f1f5f9; }
+    .tab-btn { padding: 14px; border: none; background: transparent; font-size: 0.92rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+    .tab-btn.active { background: var(--card); color: var(--accent); border-bottom: 2px solid var(--accent); }
+    .tab-content { display: none; padding: 20px; }
+    .tab-content.active { display: block; }
 
-    .tab-btn {
-      padding: 14px;
-      border: none;
-      background: transparent;
-      font-size: 0.92rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .section-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; display: block; }
 
-    .tab-btn.active {
-      background: var(--card);
-      color: var(--accent);
-      border-bottom: 2px solid var(--accent);
-    }
-
-    .tab-content {
-      display: none;
-      padding: 20px;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .section-label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    /* 수액 세트 선택 버튼 */
-    .df-group {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .df-btn {
-      padding: 10px 6px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--card);
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.15s;
-    }
-
+    .df-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+    .df-btn { padding: 10px 6px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); cursor: pointer; text-align: center; }
     .df-btn strong { display: block; font-size: 0.9rem; color: var(--primary); }
     .df-btn span { font-size: 0.72rem; color: var(--text-muted); }
-
-    .df-btn.active {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-    }
+    .df-btn.active { border-color: var(--accent); background: var(--accent-soft); }
     .df-btn.active strong { color: var(--accent); }
 
-    /* 입력 필드 카드 */
-    .input-group {
-      margin-bottom: 14px;
-    }
+    .input-group { margin-bottom: 14px; }
+    .input-row { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 10px; background: var(--card); overflow: hidden; }
+    .input-row:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    .input-row input { flex: 1; border: none; padding: 12px 14px; font-size: 1.05rem; font-weight: 600; color: var(--primary); outline: none; width: 100%; }
+    .input-row input:disabled { background: #f8fafc; color: var(--text-muted); cursor: not-allowed; }
+    .unit-tag { padding: 0 14px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: #f8fafc; border-left: 1px solid var(--border); align-self: stretch; display: flex; align-items: center; }
+    .unit-select { border: none; border-left: 1px solid var(--border); background: #f8fafc; padding: 0 10px; font-size: 0.85rem; font-weight: 600; color: var(--primary); align-self: stretch; outline: none; cursor: pointer; }
 
-    .input-row {
-      display: flex;
-      align-items: center;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--card);
-      overflow: hidden;
-      transition: border-color 0.15s;
-    }
+    .stock-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 18px; }
+    .stock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    .input-row:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .input-row input {
-      flex: 1;
-      border: none;
-      padding: 12px 14px;
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--primary);
-      outline: none;
-      width: 100%;
-    }
-
-    .input-row input:disabled {
-      background: #f8fafc;
-      color: var(--text-muted);
-      cursor: not-allowed;
-    }
-
-    .unit-tag {
-      padding: 0 14px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      background: #f8fafc;
-      border-left: 1px solid var(--border);
-      align-self: stretch;
-      display: flex;
-      align-items: center;
-    }
-
-    .unit-select {
-      border: none;
-      border-left: 1px solid var(--border);
-      background: #f8fafc;
-      padding: 0 10px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--primary);
-      align-self: stretch;
-      outline: none;
-      cursor: pointer;
-    }
-
-    /* 약물 스펙 박스 */
-    .stock-box {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 18px;
-    }
-
-    .stock-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    /* 계산식 & 경고 박스 */
-    .formula-box {
-      margin-top: 16px;
-      padding: 12px 14px;
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
+    .formula-box { margin-top: 16px; padding: 12px 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
     .formula-box strong { color: var(--primary); }
-
-    .warning-box {
-      display: none;
-      margin-top: 12px;
-      padding: 12px 14px;
-      background: var(--danger-soft);
-      border: 1px solid #fecaca;
-      border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--danger);
-    }
-
-    /* 초기화 버튼 */
-    .clear-btn {
-      width: 100%;
-      margin-top: 16px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--card);
-      color: var(--text-main);
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
+    .warning-box { display: none; margin-top: 12px; padding: 12px 14px; background: var(--danger-soft); border: 1px solid #fecaca; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--danger); }
+    .clear-btn { width: 100%; margin-top: 16px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text-main); font-size: 0.9rem; font-weight: 600; cursor: pointer; }
     .clear-btn:hover { background: #f1f5f9; }
   </style>
 </head>
@@ -274,9 +107,12 @@
     <header>
       <div class="header-left">
         <h1>임상 수액·약물 계산기</h1>
-        <span class="badge">MVP v1.0</span>
       </div>
-      <a href="pro.html" class="pro-link">Pro 버전</a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">기본형</a>
+        <a href="pro.html" class="nav-link">Pro</a>
+        <a href="transfusion.html" class="nav-link">수혈</a>
+      </div>
     </header>
 
     <div class="tabs">
@@ -284,126 +120,65 @@
       <button class="tab-btn" onclick="switchTab('drug')">약물 용량 (Dosage)</button>
     </div>
 
-    <!-- 탭 1: 수액 속도 계산기 -->
     <div id="tab-iv" class="tab-content active">
       <span class="section-label">1. 수액 세트 규격 (Drop Factor)</span>
       <div class="df-group">
-        <button class="df-btn active" data-df="20" onclick="setDropFactor(20, this)">
-          <strong>20 gtt/mL</strong>
-          <span>성인 표준</span>
-        </button>
-        <button class="df-btn" data-df="60" onclick="setDropFactor(60, this)">
-          <strong>60 gtt/mL</strong>
-          <span>소아 / 정밀</span>
-        </button>
-        <button class="df-btn" data-df="15" onclick="setDropFactor(15, this)">
-          <strong>15 gtt/mL</strong>
-          <span>수혈 / 특수</span>
-        </button>
+        <button class="df-btn active" onclick="setDropFactor(20, this)"><strong>20 gtt/mL</strong><span>성인 표준</span></button>
+        <button class="df-btn" onclick="setDropFactor(60, this)"><strong>60 gtt/mL</strong><span>정밀 주입</span></button>
+        <button class="df-btn" onclick="setDropFactor(15, this)"><strong>15 gtt/mL</strong><span>수혈 / 특수</span></button>
       </div>
 
       <span class="section-label">2. 알고 있는 값 하나만 입력하세요 (자동 변환)</span>
-      <div class="input-group">
-        <div class="input-row">
-          <input type="number" id="iv-ml" step="any" min="0" placeholder="예: 180" oninput="calcIV('ml')" />
-          <span class="unit-tag">cc/hr (mL/hr)</span>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-row">
-          <input type="number" id="iv-gtt" step="any" min="0" placeholder="예: 60" oninput="calcIV('gtt')" />
-          <span class="unit-tag">gtt/min</span>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-row">
-          <input type="number" id="iv-sec" step="any" min="0" placeholder="예: 1" oninput="calcIV('sec')" />
-          <span class="unit-tag">초당 1방울 (sec/gtt)</span>
-        </div>
-      </div>
+      <div class="input-group"><div class="input-row"><input type="number" id="iv-ml" step="any" min="0" placeholder="예: 180" oninput="calcIV('ml')" /><span class="unit-tag">cc/hr (mL/hr)</span></div></div>
+      <div class="input-group"><div class="input-row"><input type="number" id="iv-gtt" step="any" min="0" placeholder="예: 60" oninput="calcIV('gtt')" /><span class="unit-tag">gtt/min</span></div></div>
+      <div class="input-group"><div class="input-row"><input type="number" id="iv-sec" step="any" min="0" placeholder="예: 1" oninput="calcIV('sec')" /><span class="unit-tag">초당 1방울</span></div></div>
 
       <div id="iv-warning" class="warning-box"></div>
       <div id="iv-formula" class="formula-box">값을 입력하면 계산 과정이 표시됩니다.</div>
-
       <button class="clear-btn" onclick="clearIV()">전체 초기화 (Clear All)</button>
     </div>
 
-    <!-- 탭 2: 약물 용량 계산기 -->
     <div id="tab-drug" class="tab-content">
       <div class="stock-box">
         <span class="section-label">1. 보유 약물 스펙 (1앰플 전체 기준)</span>
         <div class="stock-grid">
-          <div class="input-row">
-            <input type="number" id="stock-vol" step="any" min="0" placeholder="용량 (예: 5)" oninput="calcDrug('stock')" />
-            <span class="unit-tag">cc</span>
-          </div>
+          <div class="input-row"><input type="number" id="stock-vol" step="any" min="0" placeholder="용량 (예: 5)" oninput="calcDrug('stock')" /><span class="unit-tag">cc</span></div>
           <div class="input-row">
             <input type="number" id="stock-dose" step="any" min="0" placeholder="함량 (선택)" oninput="calcDrug('stock')" />
             <select id="stock-unit" class="unit-select" onchange="syncUnits(); calcDrug('stock')">
-              <option value="mg">mg</option>
-              <option value="g">g</option>
-              <option value="mcg">mcg</option>
-              <option value="Unit">Unit</option>
-              <option value="mEq">mEq</option>
+              <option value="mg">mg</option><option value="g">g</option><option value="mcg">mcg</option><option value="Unit">Unit</option><option value="mEq">mEq</option>
             </select>
           </div>
         </div>
       </div>
 
       <span class="section-label">2. 처방 또는 투여량 입력 (자동 변환)</span>
-      <div class="input-group">
-        <div class="input-row">
-          <input type="number" id="drug-amp" step="any" min="0" placeholder="예: 0.5" oninput="calcDrug('amp')" />
-          <span class="unit-tag">앰플 (amp)</span>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-row">
-          <input type="number" id="drug-cc" step="any" min="0" placeholder="예: 2.5" oninput="calcDrug('cc')" />
-          <span class="unit-tag">투여량 (cc/mL)</span>
-        </div>
-      </div>
-
+      <div class="input-group"><div class="input-row"><input type="number" id="drug-amp" step="any" min="0" placeholder="예: 0.5" oninput="calcDrug('amp')" /><span class="unit-tag">앰플 (amp)</span></div></div>
+      <div class="input-group"><div class="input-row"><input type="number" id="drug-cc" step="any" min="0" placeholder="예: 2.5" oninput="calcDrug('cc')" /><span class="unit-tag">투여량 (cc/mL)</span></div></div>
       <div class="input-group">
         <div class="input-row">
           <input type="number" id="drug-dose" step="any" min="0" placeholder="상단 함량 입력 시 활성화" disabled oninput="calcDrug('dose')" />
           <select id="order-unit" class="unit-select" disabled onchange="calcDrug('dose')">
-            <option value="mg">mg</option>
-            <option value="g">g</option>
-            <option value="mcg">mcg</option>
-            <option value="Unit">Unit</option>
-            <option value="mEq">mEq</option>
+            <option value="mg">mg</option><option value="g">g</option><option value="mcg">mcg</option><option value="Unit">Unit</option><option value="mEq">mEq</option>
           </select>
         </div>
       </div>
 
       <div id="drug-warning" class="warning-box"></div>
       <div id="drug-formula" class="formula-box">1앰플 용량(cc)을 먼저 입력한 뒤, 아래 칸 중 하나를 입력하세요.</div>
-
       <button class="clear-btn" onclick="clearDrug()">전체 초기화 (Clear All)</button>
     </div>
   </div>
 
   <script>
-    function fmt(num, digits = 2) {
-      if (!isFinite(num) || isNaN(num)) return "";
-      return parseFloat(num.toFixed(digits));
-    }
-
+    function fmt(num, digits = 2) { if (!isFinite(num) || isNaN(num)) return ""; return parseFloat(num.toFixed(digits)); }
     function switchTab(tab) {
-      document.querySelectorAll(".tab-btn").forEach((b, idx) => {
-        b.classList.toggle("active", (tab === "iv" && idx === 0) || (tab === "drug" && idx === 1));
-      });
+      document.querySelectorAll(".tab-btn").forEach((b, idx) => b.classList.toggle("active", (tab === "iv" && idx === 0) || (tab === "drug" && idx === 1)));
       document.getElementById("tab-iv").classList.toggle("active", tab === "iv");
       document.getElementById("tab-drug").classList.toggle("active", tab === "drug");
     }
 
-    // ==================== 1. 수액 계산기 로직 ====================
     let currentDF = 20;
-
     function setDropFactor(df, btn) {
       currentDF = df;
       document.querySelectorAll(".df-btn").forEach(b => b.classList.remove("active"));
@@ -412,26 +187,12 @@
     }
 
     function calcIV(source) {
-      const mlEl = document.getElementById("iv-ml");
-      const gttEl = document.getElementById("iv-gtt");
-      const secEl = document.getElementById("iv-sec");
-      const formulaEl = document.getElementById("iv-formula");
-      const warnEl = document.getElementById("iv-warning");
-
+      const mlEl = document.getElementById("iv-ml"), gttEl = document.getElementById("iv-gtt"), secEl = document.getElementById("iv-sec");
+      const formulaEl = document.getElementById("iv-formula"), warnEl = document.getElementById("iv-warning");
       let baseMl = NaN;
-
-      if (source === "ml" || source === "df") {
-        baseMl = parseFloat(mlEl.value);
-      } else if (source === "gtt") {
-        const gttVal = parseFloat(gttEl.value);
-        if (gttVal > 0) baseMl = (gttVal * 60) / currentDF;
-      } else if (source === "sec") {
-        const secVal = parseFloat(secEl.value);
-        if (secVal > 0) {
-          const gttVal = 60 / secVal;
-          baseMl = (gttVal * 60) / currentDF;
-        }
-      }
+      if (source === "ml" || source === "df") baseMl = parseFloat(mlEl.value);
+      else if (source === "gtt") { const v = parseFloat(gttEl.value); if (v > 0) baseMl = (v * 60) / currentDF; }
+      else if (source === "sec") { const v = parseFloat(secEl.value); if (v > 0) baseMl = ((60 / v) * 60) / currentDF; }
 
       if (!isFinite(baseMl) || baseMl <= 0) {
         if (source !== "ml") mlEl.value = "";
@@ -442,97 +203,51 @@
         return;
       }
 
-      const gtt = (baseMl * currentDF) / 60;
-      const sec = 60 / gtt;
-
+      const gtt = (baseMl * currentDF) / 60, sec = 60 / gtt;
       if (source !== "ml") mlEl.value = fmt(baseMl, 1);
       if (source !== "gtt") gttEl.value = fmt(gtt, 1);
       if (source !== "sec") secEl.value = fmt(sec, 2);
 
-      formulaEl.innerHTML = `
-        <strong>계산식 (DF ${currentDF} 기준):</strong><br>
-        • ${fmt(baseMl, 1)} cc/hr × ${currentDF} ÷ 60 = <strong>${Math.round(gtt)} gtt/min</strong> (정밀값 ${fmt(gtt, 1)})<br>
-        • 60초 ÷ ${fmt(gtt, 1)} gtt = <strong>${fmt(sec, 2)}초당 1방울</strong>
-      `;
-
-      if (gtt > 120 || baseMl > 1000) {
-        warnEl.style.display = "block";
-        warnEl.textContent = "⚠️ 주입 속도가 매우 빠릅니다. 처방과 수액 세트 규격(DF)을 다시 확인하세요.";
-      } else {
-        warnEl.style.display = "none";
-      }
+      formulaEl.innerHTML = `<strong>계산식 (DF ${currentDF} 기준):</strong><br>• ${fmt(baseMl, 1)} cc/hr × ${currentDF} ÷ 60 = <strong>${Math.round(gtt)} gtt/min</strong> (정밀값 ${fmt(gtt, 1)})<br>• 60초 ÷ ${fmt(gtt, 1)} gtt = <strong>${fmt(sec, 2)}초당 1방울</strong>`;
+      if (gtt > 120 || baseMl > 1000) { warnEl.style.display = "block"; warnEl.textContent = "⚠️ 주입 속도가 매우 빠릅니다. 처방과 수액 세트 규격(DF)을 다시 확인하세요."; }
+      else warnEl.style.display = "none";
     }
 
     function clearIV() {
-      document.getElementById("iv-ml").value = "";
-      document.getElementById("iv-gtt").value = "";
-      document.getElementById("iv-sec").value = "";
+      ["iv-ml", "iv-gtt", "iv-sec"].forEach(id => document.getElementById(id).value = "");
       document.getElementById("iv-formula").innerHTML = "값을 입력하면 계산 과정이 표시됩니다.";
       document.getElementById("iv-warning").style.display = "none";
     }
 
-    // ==================== 2. 약물 계산기 로직 ====================
     const weightFactors = { g: 1000, mg: 1, mcg: 0.001 };
-
     function syncUnits() {
-      const sUnit = document.getElementById("stock-unit").value;
-      const oUnitEl = document.getElementById("order-unit");
+      const sUnit = document.getElementById("stock-unit").value, oUnitEl = document.getElementById("order-unit");
       const isWeight = sUnit in weightFactors;
-
-      Array.from(oUnitEl.options).forEach(opt => {
-        if (isWeight) {
-          opt.disabled = !(opt.value in weightFactors);
-        } else {
-          opt.disabled = opt.value !== sUnit;
-        }
-      });
-
-      if (!isWeight || !(oUnitEl.value in weightFactors)) {
-        oUnitEl.value = sUnit;
-      }
+      Array.from(oUnitEl.options).forEach(opt => opt.disabled = isWeight ? !(opt.value in weightFactors) : opt.value !== sUnit);
+      if (!isWeight || !(oUnitEl.value in weightFactors)) oUnitEl.value = sUnit;
     }
 
     function calcDrug(source) {
-      const sVol = parseFloat(document.getElementById("stock-vol").value);
-      const sDose = parseFloat(document.getElementById("stock-dose").value);
-      const sUnit = document.getElementById("stock-unit").value;
-      const oUnit = document.getElementById("order-unit").value;
-
-      const ampEl = document.getElementById("drug-amp");
-      const ccEl = document.getElementById("drug-cc");
-      const doseEl = document.getElementById("drug-dose");
-      const oUnitEl = document.getElementById("order-unit");
-      const formulaEl = document.getElementById("drug-formula");
-      const warnEl = document.getElementById("drug-warning");
+      const sVol = parseFloat(document.getElementById("stock-vol").value), sDose = parseFloat(document.getElementById("stock-dose").value);
+      const sUnit = document.getElementById("stock-unit").value, oUnit = document.getElementById("order-unit").value;
+      const ampEl = document.getElementById("drug-amp"), ccEl = document.getElementById("drug-cc"), doseEl = document.getElementById("drug-dose");
+      const oUnitEl = document.getElementById("order-unit"), formulaEl = document.getElementById("drug-formula"), warnEl = document.getElementById("drug-warning");
 
       const hasDose = isFinite(sDose) && sDose > 0;
-      doseEl.disabled = !hasDose;
-      oUnitEl.disabled = !hasDose;
+      doseEl.disabled = !hasDose; oUnitEl.disabled = !hasDose;
       doseEl.placeholder = hasDose ? `예: ${fmt(sDose / 2, 2)}` : "상단 함량 입력 시 활성화";
       if (!hasDose) doseEl.value = "";
 
-      if (!isFinite(sVol) || sVol <= 0) {
-        formulaEl.innerHTML = "1앰플 용량(cc)을 먼저 입력해 주세요.";
-        warnEl.style.display = "none";
-        return;
-      }
+      if (!isFinite(sVol) || sVol <= 0) { formulaEl.innerHTML = "1앰플 용량(cc)을 먼저 입력해 주세요."; warnEl.style.display = "none"; return; }
 
       let unitRatio = 1;
-      if (sUnit in weightFactors && oUnit in weightFactors) {
-        unitRatio = weightFactors[oUnit] / weightFactors[sUnit];
-      }
+      if (sUnit in weightFactors && oUnit in weightFactors) unitRatio = weightFactors[oUnit] / weightFactors[sUnit];
 
       let baseRatio = NaN;
-
-      if (source === "amp") {
-        baseRatio = parseFloat(ampEl.value);
-      } else if (source === "cc") {
-        const ccVal = parseFloat(ccEl.value);
-        if (ccVal > 0) baseRatio = ccVal / sVol;
-      } else if (source === "dose" && hasDose) {
-        const dVal = parseFloat(doseEl.value);
-        if (dVal > 0) baseRatio = (dVal * unitRatio) / sDose;
-      } else if (source === "stock") {
+      if (source === "amp") baseRatio = parseFloat(ampEl.value);
+      else if (source === "cc") { const v = parseFloat(ccEl.value); if (v > 0) baseRatio = v / sVol; }
+      else if (source === "dose" && hasDose) { const v = parseFloat(doseEl.value); if (v > 0) baseRatio = (v * unitRatio) / sDose; }
+      else if (source === "stock") {
         if (parseFloat(ampEl.value) > 0) baseRatio = parseFloat(ampEl.value);
         else if (parseFloat(ccEl.value) > 0) baseRatio = parseFloat(ccEl.value) / sVol;
       }
@@ -546,35 +261,22 @@
         return;
       }
 
-      const giveCc = baseRatio * sVol;
-      const giveDoseInOrderUnit = hasDose ? (baseRatio * sDose) / unitRatio : NaN;
-
+      const giveCc = baseRatio * sVol, giveDose = hasDose ? (baseRatio * sDose) / unitRatio : NaN;
       if (source !== "amp") ampEl.value = fmt(baseRatio, 3);
       if (source !== "cc") ccEl.value = fmt(giveCc, 2);
-      if (source !== "dose" && hasDose) doseEl.value = fmt(giveDoseInOrderUnit, 3);
+      if (source !== "dose" && hasDose) doseEl.value = fmt(giveDose, 3);
 
-      let formulaHTML = `<strong>계산식:</strong><br>• ${fmt(baseRatio, 3)} amp × ${sVol} cc = <strong>${fmt(giveCc, 2)} cc</strong>`;
-      if (hasDose) {
-        formulaHTML += `<br>• 처방 함량: <strong>${fmt(giveDoseInOrderUnit, 3)} ${oUnit}</strong> (1앰플 = ${sDose} ${sUnit})`;
-      }
-      formulaEl.innerHTML = formulaHTML;
+      let html = `<strong>계산식:</strong><br>• ${fmt(baseRatio, 3)} amp × ${sVol} cc = <strong>${fmt(giveCc, 2)} cc</strong>`;
+      if (hasDose) html += `<br>• 처방 함량: <strong>${fmt(giveDose, 3)} ${oUnit}</strong> (1앰플 = ${sDose} ${sUnit})`;
+      formulaEl.innerHTML = html;
 
-      if (baseRatio > 5) {
-        warnEl.style.display = "block";
-        warnEl.textContent = "⚠️ 1회 투여량이 5앰플을 초과합니다. 소수점과 단위를 반드시 재확인하세요.";
-      } else {
-        warnEl.style.display = "none";
-      }
+      if (baseRatio > 5) { warnEl.style.display = "block"; warnEl.textContent = "⚠️ 1회 투여량이 5앰플을 초과합니다. 소수점과 단위를 반드시 재확인하세요."; }
+      else warnEl.style.display = "none";
     }
 
     function clearDrug() {
-      document.getElementById("stock-vol").value = "";
-      document.getElementById("stock-dose").value = "";
-      document.getElementById("drug-amp").value = "";
-      document.getElementById("drug-cc").value = "";
-      document.getElementById("drug-dose").value = "";
-      document.getElementById("drug-dose").disabled = true;
-      document.getElementById("order-unit").disabled = true;
+      ["stock-vol", "stock-dose", "drug-amp", "drug-cc", "drug-dose"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("drug-dose").disabled = true; document.getElementById("order-unit").disabled = true;
       document.getElementById("drug-formula").innerHTML = "1앰플 용량(cc)을 먼저 입력한 뒤, 아래 칸 중 하나를 입력하세요.";
       document.getElementById("drug-warning").style.display = "none";
     }
