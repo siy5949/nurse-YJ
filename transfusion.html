@@ -52,17 +52,8 @@
       flex-wrap: wrap;
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    header h1 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    header h1 { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
 
     .badge {
       font-size: 0.72rem;
@@ -73,11 +64,7 @@
       color: var(--blood);
     }
 
-    .nav-links {
-      display: flex;
-      gap: 6px;
-    }
-
+    .nav-links { display: flex; gap: 6px; }
     .nav-link {
       font-size: 0.76rem;
       font-weight: 600;
@@ -95,9 +82,7 @@
       background: var(--blood-soft);
     }
 
-    .content {
-      padding: 20px;
-    }
+    .content { padding: 20px; }
 
     .section-label {
       font-size: 0.8rem;
@@ -128,13 +113,7 @@
       margin-bottom: 16px;
     }
 
-    .df-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
+    .df-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
     .df-chip {
       padding: 6px 10px;
       font-size: 0.78rem;
@@ -180,14 +159,9 @@
       text-align: left;
       transition: all 0.15s;
     }
-
     .prod-btn strong { display: block; font-size: 0.9rem; color: var(--primary); }
     .prod-btn span { font-size: 0.74rem; color: var(--text-muted); }
-
-    .prod-btn.active {
-      border-color: var(--blood);
-      background: var(--blood-soft);
-    }
+    .prod-btn.active { border-color: var(--blood); background: var(--blood-soft); }
     .prod-btn.active strong { color: var(--blood); }
 
     /* I/O 설정 박스 */
@@ -214,12 +188,10 @@
       background: var(--card);
       overflow: hidden;
     }
-
     .input-row:focus-within {
       border-color: var(--blood);
       box-shadow: 0 0 0 3px rgba(190, 18, 60, 0.08);
     }
-
     .input-row input {
       flex: 1;
       border: none;
@@ -244,6 +216,14 @@
       white-space: nowrap;
     }
 
+    .qty-chips {
+      display: none;
+      gap: 6px;
+      margin: 8px 0;
+      flex-wrap: wrap;
+    }
+    .qty-chips.show { display: flex; }
+
     .io-actions {
       display: flex;
       justify-content: space-between;
@@ -252,16 +232,8 @@
       margin-top: 8px;
       flex-wrap: wrap;
     }
-
-    .io-ref-text {
-      font-size: 0.74rem;
-      color: var(--text-muted);
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 6px;
-    }
+    .io-ref-text { font-size: 0.74rem; color: var(--text-muted); }
+    .btn-group { display: flex; gap: 6px; }
 
     .mini-btn {
       padding: 5px 9px;
@@ -273,11 +245,7 @@
       background: var(--card);
       color: var(--text-main);
     }
-    .mini-btn.save {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
+    .mini-btn.save { background: var(--primary); color: #fff; border-color: var(--primary); }
 
     .total-io-bar {
       margin-top: 10px;
@@ -292,13 +260,7 @@
     .total-io-bar strong { color: var(--blood); font-size: 0.95rem; }
 
     /* 시간 선택 버튼 */
-    .quick-chips {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-
+    .quick-chips { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
     .chip-btn {
       padding: 6px 11px;
       font-size: 0.8rem;
@@ -310,31 +272,13 @@
       cursor: pointer;
       transition: all 0.15s;
     }
-    .chip-btn:hover {
-      border-color: var(--blood);
-      color: var(--blood);
-    }
-    .chip-btn.active {
-      border-color: var(--blood);
-      color: var(--blood);
-      background: var(--blood-soft);
-    }
+    .chip-btn:hover { border-color: var(--blood); color: var(--blood); }
+    .chip-btn.active { border-color: var(--blood); color: var(--blood); background: var(--blood-soft); }
 
-    .time-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
+    .time-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
 
     /* 결과 카드 */
-    .result-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
+    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
     .result-card {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -343,7 +287,43 @@
       text-align: center;
     }
     .result-card span { display: block; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
-    .result-card strong { font-size: 1.05rem; color: var(--primary); }
+    .result-card strong { font-size: 1.02rem; color: var(--primary); }
+
+    /* 2단계 실전 투여 스케줄 박스 */
+    .schedule-box {
+      background: var(--accent-soft);
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 13px 14px;
+      margin-bottom: 14px;
+      font-size: 0.81rem;
+      color: var(--primary);
+      line-height: 1.55;
+    }
+    .schedule-box h4 {
+      font-size: 0.84rem;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .pack-schedule-list {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #93c5fd;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .pack-item {
+      background: var(--card);
+      border: 1px solid #dbeafe;
+      border-radius: 8px;
+      padding: 6px 9px;
+      font-size: 0.76rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pack-item strong { color: var(--accent); }
 
     /* 경고 배너 */
     .alert-box {
@@ -355,16 +335,8 @@
       font-weight: 600;
       line-height: 1.45;
     }
-    .alert-danger {
-      background: var(--danger-soft);
-      border: 1px solid #fecaca;
-      color: var(--danger);
-    }
-    .alert-warn {
-      background: var(--warn-soft);
-      border: 1px solid #fde68a;
-      color: var(--warn);
-    }
+    .alert-danger { background: var(--danger-soft); border: 1px solid #fecaca; color: var(--danger); }
+    .alert-warn { background: var(--warn-soft); border: 1px solid #fde68a; color: var(--warn); }
 
     /* 임상 프로토콜 카드 */
     .guide-card {
@@ -376,23 +348,16 @@
       line-height: 1.55;
       color: var(--text-main);
     }
-    .guide-card h3 {
-      font-size: 0.86rem;
-      color: var(--primary);
-      margin-bottom: 8px;
-    }
-    .guide-card ul {
-      padding-left: 16px;
-    }
-    .guide-card li {
-      margin-bottom: 4px;
-    }
+    .guide-card h3 { font-size: 0.86rem; color: var(--primary); margin-bottom: 8px; }
+    .guide-card ul { padding-left: 16px; }
+    .guide-card li { margin-bottom: 5px; }
     .common-rule {
       margin-top: 10px;
       padding-top: 8px;
       border-top: 1px dashed var(--border);
       font-size: 0.76rem;
       color: var(--text-muted);
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -441,6 +406,14 @@
           </div>
         </div>
 
+        <!-- PC 선택 시 1 dose 원터치 수량 버튼 -->
+        <div id="pc-qty-chips" class="qty-chips">
+          <button class="chip-btn" data-qty="6" onclick="setPCQty(6, 1, 0)">6팩 (1 dose 권장)</button>
+          <button class="chip-btn" data-qty="5" onclick="setPCQty(5, 1, 0)">5팩 (1 dose)</button>
+          <button class="chip-btn" data-qty="8" onclick="setPCQty(8, 1, 0)">8팩</button>
+          <button class="chip-btn" data-qty="1" onclick="setPCQty(1, 0, 15)">1팩 단독</button>
+        </div>
+
         <div class="io-actions">
           <span id="io-ref-text" class="io-ref-text"></span>
           <div class="btn-group">
@@ -456,7 +429,6 @@
       </div>
 
       <span id="time-section-label" class="section-label">3. 목표 수혈 시간 설정</span>
-      <!-- 제제별로 안전한 시간 버튼만 동적 렌더링 -->
       <div class="quick-chips" id="time-chips"></div>
 
       <div class="time-inputs">
@@ -472,18 +444,21 @@
 
       <div class="result-grid">
         <div class="result-card">
-          <span>시간당 주입량</span>
+          <span>전체 평균 속도</span>
           <strong id="res-ml">-</strong>
         </div>
         <div class="result-card">
-          <span>분당 방울 수</span>
+          <span>평균 방울 수</span>
           <strong id="res-gtt">-</strong>
         </div>
         <div class="result-card">
-          <span>방울 간격</span>
+          <span>평균 방울 간격</span>
           <strong id="res-sec">-</strong>
         </div>
       </div>
+
+      <!-- 첫 15분 관찰 반영 실전 2단계 스케줄 -->
+      <div id="schedule-box" class="schedule-box" style="display:none;"></div>
 
       <div id="tf-alert" class="alert-box"></div>
 
@@ -497,35 +472,37 @@
 
     let currentDF = parseFloat(localStorage.getItem(CUSTOM_DF_KEY)) || 15;
 
-    // 제제별 안전 시간 버튼 프리셋 (최소 ~ 권장 ~ 최대)
+    // 제제별 권장 시간(맨 앞 또는 강조) + 안전 옵션 버튼
     const TIME_PRESETS = {
       PRBC: [
-        { label: "1시간 30분", hr: 1, min: 30 },
         { label: "2시간 (권장)", hr: 2, min: 0 },
+        { label: "1시간 30분", hr: 1, min: 30 },
         { label: "3시간", hr: 3, min: 0 },
         { label: "4시간 (최대)", hr: 4, min: 0 }
       ],
       PC: [
-        { label: "10분", hr: 0, min: 10 },
-        { label: "15분 (권장)", hr: 0, min: 15 },
-        { label: "30분", hr: 0, min: 30 },
-        { label: "1시간 (1 dose)", hr: 1, min: 0 }
+        { label: "1시간 (1 dose 권장)", hr: 1, min: 0 },
+        { label: "45분 (옵션)", hr: 0, min: 45 },
+        { label: "30분 (옵션)", hr: 0, min: 30 },
+        { label: "15분 (1팩)", hr: 0, min: 15 },
+        { label: "10분 (1팩)", hr: 0, min: 10 },
+        { label: "5분 (빠른 연속)", hr: 0, min: 5 }
       ],
       FFP: [
-        { label: "30분", hr: 0, min: 30 },
         { label: "1시간 (권장)", hr: 1, min: 0 },
+        { label: "30분", hr: 0, min: 30 },
         { label: "2시간", hr: 2, min: 0 },
         { label: "3시간 (실온 최대)", hr: 3, min: 0 }
       ]
     };
 
     const PRODUCTS = [
-      { id: "prbc320", type: "PRBC", name: "PRBC 320mL", defaultVol: 190, refRange: "공식 참고: 190±20 mL", defaultHr: 2, defaultMin: 0 },
-      { id: "prbc400", type: "PRBC", name: "PRBC 400mL", defaultVol: 250, refRange: "공식 참고: 250±25 mL", defaultHr: 2, defaultMin: 0 },
-      { id: "pc320", type: "PC", name: "PC 320mL", defaultVol: 40, refRange: "공식 참고: 40±5 mL", defaultHr: 0, defaultMin: 15 },
-      { id: "pc400", type: "PC", name: "PC 400mL", defaultVol: 50, refRange: "공식 참고: 50±5 mL", defaultHr: 0, defaultMin: 15 },
-      { id: "ffp320", type: "FFP", name: "FFP 320mL", defaultVol: 150, refRange: "공식 참고: 150±30 mL 이상", defaultHr: 1, defaultMin: 0 },
-      { id: "ffp400", type: "FFP", name: "FFP 400mL", defaultVol: 174, refRange: "공식 참고: 174±29 mL 이상", defaultHr: 1, defaultMin: 0 }
+      { id: "prbc320", type: "PRBC", name: "PRBC 320mL", defaultVol: 190, refRange: "공식 참고: 190±20 mL", defaultQty: 1, defaultHr: 2, defaultMin: 0 },
+      { id: "prbc400", type: "PRBC", name: "PRBC 400mL", defaultVol: 250, refRange: "공식 참고: 250±25 mL", defaultQty: 1, defaultHr: 2, defaultMin: 0 },
+      { id: "pc320", type: "PC", name: "PC 320mL", defaultVol: 40, refRange: "공식 참고: 40±5 mL", defaultQty: 6, defaultHr: 1, defaultMin: 0 },
+      { id: "pc400", type: "PC", name: "PC 400mL", defaultVol: 50, refRange: "공식 참고: 50±5 mL", defaultQty: 6, defaultHr: 1, defaultMin: 0 },
+      { id: "ffp320", type: "FFP", name: "FFP 320mL", defaultVol: 150, refRange: "공식 참고: 150±30 mL 이상", defaultQty: 1, defaultHr: 1, defaultMin: 0 },
+      { id: "ffp400", type: "FFP", name: "FFP 400mL", defaultVol: 174, refRange: "공식 참고: 174±29 mL 이상", defaultQty: 1, defaultHr: 1, defaultMin: 0 }
     ];
 
     const GUIDES = {
@@ -540,9 +517,9 @@
       PC: {
         title: "PC (농축혈소판) 성인 수혈 가이드",
         items: [
-          "<strong>권장 시간:</strong> 1 dose(5~6팩 연속 투여) 기준 통상 <strong>약 60분</strong> 내외 (임상 1팩당 약 10~15분 연속 투여 예시).",
-          "<strong>보관 및 투여:</strong> 실온(20~24℃) 보관 및 교반 제제이므로 <strong>냉장 보관 금지</strong>. 출고 후 불필요한 지연 없이 투여합니다.",
-          "<strong>제제 구분:</strong> 성분채혈혈소판(Apheresis PC, 200~250mL)은 일반 PC와 별도 용량·기준을 적용합니다."
+          "<strong>권장 시간:</strong> <strong>1 dose(5~6팩 연속 투여) = 30분~1시간(권장)</strong> — 국내 공식 가이드라인은 통상 <strong>60분</strong> 기준입니다.",
+          "<strong>임상 연속 투여법:</strong> 첫 15분간 50 mL/hr로 관찰한 뒤 부작용이 없으면, 나머지 팩들은 <strong>팩당 약 5~10분</strong> 간격으로 지연 없이 연속 투여합니다.",
+          "<strong>보관 및 구분:</strong> 실온(20~24℃) 보관·교반 제제이므로 <strong>냉장 보관 금지</strong>. 성분채혈혈소판(Apheresis PC, 200~250mL)은 별도 기준 적용."
         ]
       },
       FFP: {
@@ -557,6 +534,11 @@
 
     let currentProd = PRODUCTS[0];
 
+    function fmt(num, digits = 1) {
+      if (!isFinite(num) || isNaN(num)) return "-";
+      return parseFloat(num.toFixed(digits));
+    }
+
     // ==================== 수혈 세트 DF 관리 ====================
     function updateDFUI() {
       document.getElementById("df-badge").textContent = `DF ${currentDF}`;
@@ -567,29 +549,20 @@
         btn.classList.toggle("active", parseFloat(btn.dataset.df) === currentDF);
       });
 
-      // 첫 15분 관찰 속도 (50 mL/hr) 자동 환산 표시
       const obsGtt = (50 * currentDF) / 60;
       const obsSec = 60 / obsGtt;
       document.getElementById("obs-banner").innerHTML = `
-        <strong>성인 수혈 첫 15분 관찰 속도:</strong> <strong>50 mL/hr</strong> (현재 ${currentDF} gtt/mL 세트 기준 약 <strong>${parseFloat(obsGtt.toFixed(1))} gtt/min</strong>, ${parseFloat(obsSec.toFixed(1))}초당 1방울)로 천천히 주입하며 급성 부작용을 확인합니다.
+        <strong>성인 수혈 첫 15분 관찰 속도:</strong> <strong>50 mL/hr</strong> (현재 ${currentDF} gtt/mL 세트 기준 약 <strong>${fmt(obsGtt, 1)} gtt/min</strong>, ${fmt(obsSec, 1)}초당 1방울)로 천천히 주입하며 급성 부작용을 확인합니다.
       `;
 
       calcTransfusion();
     }
 
-    function setBloodDF(df) {
-      currentDF = df;
-      updateDFUI();
-    }
-
+    function setBloodDF(df) { currentDF = df; updateDFUI(); }
     function onCustomDFInput() {
       const val = parseFloat(document.getElementById("custom-df-input").value);
-      if (isFinite(val) && val > 0) {
-        currentDF = val;
-        updateDFUI();
-      }
+      if (isFinite(val) && val > 0) { currentDF = val; updateDFUI(); }
     }
-
     function saveHospitalDF() {
       if (!isFinite(currentDF) || currentDF <= 0) return;
       localStorage.setItem(CUSTOM_DF_KEY, String(currentDF));
@@ -629,12 +602,20 @@
       currentProd = PRODUCTS.find(p => p.id === id);
       const custom = getCustomIO();
       document.getElementById("pack-vol").value = custom[id] ?? currentProd.defaultVol;
-      document.getElementById("pack-qty").value = 1;
+      document.getElementById("pack-qty").value = currentProd.defaultQty;
       document.getElementById("io-ref-text").textContent = currentProd.refRange;
+
+      document.getElementById("pc-qty-chips").classList.toggle("show", currentProd.type === "PC");
+
       renderProducts();
       renderTimeChips();
       renderGuide();
       setDuration(currentProd.defaultHr, currentProd.defaultMin);
+    }
+
+    function setPCQty(qty, hr, min) {
+      document.getElementById("pack-qty").value = qty;
+      setDuration(hr, min);
     }
 
     function saveHospitalIO() {
@@ -668,7 +649,8 @@
         <h3>${g.title}</h3>
         <ul>${g.items.map(i => `<li>${i}</li>`).join("")}</ul>
         <div class="common-rule">
-          ※ 공통 원칙: 수혈 라인에는 <strong>0.9% 생리식염수(NS)</strong>만 함께 사용 가능하며, 포도당(DW)·하트만(H/S)·기타 약물은 절대 혼합하지 않습니다.
+          <strong>• V/S 측정 간격:</strong> 시작 직전 → 시작 후 15분 → 수혈 중(30분~1시간마다) → 완료 시 → 완료 후 1시간 이내<br>
+          <strong>• 라인 원칙:</strong> 0.9% 생리식염수(NS)만 병용 가능 (DW·H/S·타 약물 절대 혼합 금지). 전처치 약물은 과거 부작용 병력 및 주치의 처방에 따라 선별 투여.
         </div>
       `;
     }
@@ -680,21 +662,29 @@
       const min = parseFloat(document.getElementById("dur-min").value) || 0;
 
       const totalVol = isFinite(packVol) && packVol > 0 ? packVol * qty : 0;
-      document.getElementById("total-vol-display").textContent = totalVol > 0 ? `${parseFloat(totalVol.toFixed(1))} mL` : "-";
+      document.getElementById("total-vol-display").textContent = totalVol > 0 ? `${fmt(totalVol, 1)} mL (${qty}팩)` : "-";
+
+      // PC 수량 칩 활성화 표시
+      document.querySelectorAll("#pc-qty-chips .chip-btn").forEach(btn => {
+        btn.classList.toggle("active", parseInt(btn.dataset.qty, 10) === qty);
+      });
 
       const totalMin = Math.round(hr * 60 + min);
 
+      // 시간 칩 활성화 표시
       document.querySelectorAll("#time-chips .chip-btn").forEach(btn => {
         btn.classList.toggle("active", parseInt(btn.dataset.min, 10) === totalMin);
       });
 
       const alertEl = document.getElementById("tf-alert");
+      const schedEl = document.getElementById("schedule-box");
 
       if (totalVol <= 0 || totalMin <= 0) {
         document.getElementById("res-ml").textContent = "-";
         document.getElementById("res-gtt").textContent = "-";
         document.getElementById("res-sec").textContent = "-";
         alertEl.style.display = "none";
+        schedEl.style.display = "none";
         return;
       }
 
@@ -702,16 +692,57 @@
       const gttPerMin = (mlPerHr * currentDF) / 60;
       const secPerGtt = 60 / gttPerMin;
 
-      document.getElementById("res-ml").textContent = `${parseFloat(mlPerHr.toFixed(1))} cc/hr`;
+      document.getElementById("res-ml").textContent = `${fmt(mlPerHr, 1)} cc/hr`;
       document.getElementById("res-gtt").textContent = `${Math.round(gttPerMin)} gtt/min`;
-      document.getElementById("res-sec").textContent = `${parseFloat(secPerGtt.toFixed(2))}초/1방울`;
+      document.getElementById("res-sec").textContent = `${fmt(secPerGtt, 2)}초/1방울`;
 
+      // ==================== 실전 2단계 스케줄 계산 (첫 15분 50 mL/hr 반영) ====================
+      let stage2Rate = mlPerHr;
+      if (totalMin > 15 && totalVol > 12.5) {
+        const first15Vol = 12.5; // 50 mL/hr × 0.25 hr
+        const remainVol = totalVol - first15Vol;
+        const remainMin = totalMin - 15;
+        stage2Rate = remainVol / (remainMin / 60);
+        const stage2Gtt = (stage2Rate * currentDF) / 60;
+        const stage2Sec = 60 / stage2Gtt;
+
+        let schedHTML = `
+          <h4>📋 첫 15분 관찰 반영 실전 스케줄</h4>
+          • <strong>1단계 (0~15분):</strong> 50 cc/hr (12.5 mL 주입, 부작용 관찰)<br>
+          • <strong>2단계 (15분~완료):</strong> <strong>${fmt(stage2Rate, 1)} cc/hr</strong> (${Math.round(stage2Gtt)} gtt/min, ${fmt(stage2Sec, 2)}초/1방울)
+        `;
+
+        // 2팩 이상일 때 1팩 ~ N팩별 예상 소요 시간 표시
+        if (qty > 1) {
+          const mlPerMinStage2 = stage2Rate / 60;
+          const pack1RemainVol = Math.max(0, packVol - first15Vol);
+          const pack1Min = 15 + (pack1RemainVol / mlPerMinStage2);
+          const otherPackMin = packVol / mlPerMinStage2;
+
+          let itemsHTML = `<div class="pack-item"><span>1 Pack (관찰 포함)</span><strong>약 ${fmt(pack1Min, 1)}분</strong></div>`;
+          for (let i = 2; i <= qty; i++) {
+            itemsHTML += `<div class="pack-item"><span>${i} Pack</span><strong>약 ${fmt(otherPackMin, 1)}분</strong></div>`;
+          }
+          schedHTML += `<div class="pack-schedule-list">${itemsHTML}</div>`;
+        }
+
+        schedEl.innerHTML = schedHTML;
+        schedEl.style.display = "block";
+      } else {
+        schedEl.innerHTML = `
+          <h4>📋 단기/연속 투여 참고</h4>
+          설정한 시간이 15분 이하입니다. <strong>첫 번째 팩은 반드시 15분간 50 cc/hr로 관찰</strong>한 뒤, 이상이 없을 때 다음 팩부터 위 속도로 연속 투여하세요.
+        `;
+        schedEl.style.display = "block";
+      }
+
+      // ==================== 제제별 안전 경고 로직 ====================
       alertEl.style.display = "none";
       if (currentProd.type === "PRBC") {
         if (totalMin > 240) {
           alertEl.className = "alert-box alert-danger";
           alertEl.style.display = "block";
-          alertEl.textContent = "⚠️ 4시간 초과 불가: PRBC는 실온 노출 시 세균 증식 및 용혈/오염 위험으로 인해 출고 후 4시간 이내에 완료해야 합니다.";
+          alertEl.textContent = "⚠️ 4시간 초과 불가: PRBC는 실온 노출 시 세균 증식 및 용혈/오염 위험으로 출고 후 4시간 이내에 완료해야 합니다.";
         } else if (totalMin < 90) {
           alertEl.className = "alert-box alert-warn";
           alertEl.style.display = "block";
@@ -724,10 +755,14 @@
           alertEl.textContent = "⚠️ 실온 3시간 초과 주의: FFP는 해동 후 실온에서 3시간 이내 사용을 권장합니다. (냉장 보관 시 24시간 이내)";
         }
       } else if (currentProd.type === "PC") {
-        if (totalMin > 90) {
+        if (qty >= 5 && stage2Rate > 450) {
+          alertEl.className = "alert-box alert-danger";
+          alertEl.style.display = "block";
+          alertEl.textContent = `⚠️ 과속 주입 위험 (본 속도 ${fmt(stage2Rate, 0)} cc/hr): 첫 15분 관찰을 포함해 ${qty}팩을 ${totalMin}분 안에 완료하는 것은 매우 빠릅니다. 순환과부하(TACO) 방지를 위해 1시간(60분) 설정을 권장합니다.`;
+        } else if (totalMin > 90) {
           alertEl.className = "alert-box alert-warn";
           alertEl.style.display = "block";
-          alertEl.textContent = "💡 혈소판 지연 투여 주의: 통상 1 dose(5~6팩)당 약 60분 내외로 지연 없이 투여하는 것을 권장합니다.";
+          alertEl.textContent = "💡 혈소판 지연 투여 주의: 1 dose(5~6팩) 기준 통상 30분~1시간(공식 60분) 내외로 지연 없이 투여하는 것을 권장합니다.";
         }
       }
     }
