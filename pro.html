@@ -71,9 +71,10 @@
 
     .lite-link {
       font-size: 0.78rem;
+      font-weight: 600;
       color: var(--text-muted);
       text-decoration: none;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border: 1px solid var(--border);
       border-radius: 6px;
     }
@@ -116,6 +117,14 @@
       font-weight: 700;
       color: var(--text-muted);
       margin-bottom: 8px;
+      display: block;
+    }
+
+    .field-caption {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
       display: block;
     }
 
@@ -173,8 +182,8 @@
     .input-row input {
       flex: 1;
       border: none;
-      padding: 11px 14px;
-      font-size: 1rem;
+      padding: 11px 12px;
+      font-size: 0.98rem;
       font-weight: 600;
       color: var(--primary);
       outline: none;
@@ -244,20 +253,20 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 10px;
+      margin: 10px 0;
     }
 
     .eta-result {
       padding: 10px 12px;
       background: var(--accent-soft);
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       color: var(--primary);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .eta-result strong { color: var(--accent); font-size: 0.98rem; }
+    .eta-result strong { color: var(--accent); font-size: 0.95rem; }
 
     /* 약물 스펙 & 프리셋 */
     .stock-grid {
@@ -376,7 +385,7 @@
     <header>
       <div class="header-left">
         <h1>임상 수액·약물 계산기</h1>
-        <span class="badge">Pro v2.0</span>
+        <span class="badge">Pro v2.1</span>
       </div>
       <a href="index.html" class="lite-link">기본형</a>
     </header>
@@ -386,7 +395,7 @@
       <button class="tab-btn" onclick="switchTab('drug')">약물 용량 (Dosage)</button>
     </div>
 
-    <!-- 탭 1: 수액 속도 + 종료 예상 시간 -->
+    <!-- 탭 1: 수액 속도 + 양방향 종료 시각 계산 -->
     <div id="tab-iv" class="tab-content active">
       <span class="section-label">1. 수액 세트 규격 (Drop Factor)</span>
       <div class="df-group">
@@ -428,26 +437,38 @@
 
       <hr class="divider" />
 
-      <!-- 2단계 신규: 수액 종료 예상 시간 -->
+      <!-- 양방향 종료 시각 계산 -->
       <div class="sub-box">
-        <span class="section-label">3. 수액 종료 예상 시간 계산</span>
+        <span class="section-label">3. 총 용량 &amp; 시작·종료 시각 (양방향 연동)</span>
         <div class="quick-chips">
           <button class="chip-btn" onclick="setTotalVol(100)">100 mL</button>
           <button class="chip-btn" onclick="setTotalVol(250)">250 mL</button>
           <button class="chip-btn" onclick="setTotalVol(500)">500 mL</button>
           <button class="chip-btn" onclick="setTotalVol(1000)">1000 mL</button>
         </div>
+
+        <div class="input-row">
+          <input type="number" id="iv-total-vol" step="any" min="0" placeholder="총 수액 용량 (예: 1000)" oninput="calcFromRate()" />
+          <span class="unit-tag">mL</span>
+        </div>
+
         <div class="time-grid">
-          <div class="input-row">
-            <input type="number" id="iv-total-vol" step="any" min="0" placeholder="총 용량" oninput="calcETA()" />
-            <span class="unit-tag">mL</span>
+          <div>
+            <span class="field-caption">시작 시각</span>
+            <div class="input-row">
+              <input type="time" id="iv-start-time" onchange="calcFromRate()" />
+            </div>
           </div>
-          <div class="input-row">
-            <input type="time" id="iv-start-time" onchange="calcETA()" />
+          <div>
+            <span class="field-caption">종료 시각 (직접 입력 시 속도 역산)</span>
+            <div class="input-row">
+              <input type="time" id="iv-end-time" onchange="calcFromEndTime()" />
+            </div>
           </div>
         </div>
+
         <div id="iv-eta-result" class="eta-result">
-          <span>종료 예정 시각</span>
+          <span>소요 시간 / 종료 예정</span>
           <strong>-</strong>
         </div>
       </div>
@@ -476,7 +497,6 @@
           </div>
         </div>
 
-        <!-- 2단계 신규: 나만의 프리셋 저장 -->
         <div class="preset-save-row">
           <input type="text" id="preset-name" placeholder="프리셋 이름 (예: 진통제 5cc)" />
           <button class="save-btn" onclick="savePreset()">저장</button>
@@ -533,7 +553,6 @@
       document.getElementById("tab-drug").classList.toggle("active", tab === "drug");
     }
 
-    // 현재 시각 기본 세팅
     function setNowTime() {
       const now = new Date();
       const hh = String(now.getHours()).padStart(2, "0");
@@ -541,7 +560,7 @@
       document.getElementById("iv-start-time").value = `${hh}:${mm}`;
     }
 
-    // ==================== 1. 수액 계산기 + 종료 예상 시간 ====================
+    // ==================== 1. 수액 계산기 + 양방향 종료 시각 ====================
     let currentDF = 20;
 
     function setDropFactor(df, btn) {
@@ -551,7 +570,7 @@
       calcIV("df");
     }
 
-    function calcIV(source) {
+    function calcIV(source, overrideMl = null) {
       const mlEl = document.getElementById("iv-ml");
       const gttEl = document.getElementById("iv-gtt");
       const secEl = document.getElementById("iv-sec");
@@ -559,7 +578,9 @@
       const alertEl = document.getElementById("iv-alert");
 
       let baseMl = NaN;
-      if (source === "ml" || source === "df") {
+      if (source === "eta" && overrideMl !== null) {
+        baseMl = overrideMl;
+      } else if (source === "ml" || source === "df") {
         baseMl = parseFloat(mlEl.value);
       } else if (source === "gtt") {
         const gttVal = parseFloat(gttEl.value);
@@ -575,7 +596,7 @@
         if (source !== "sec") secEl.value = "";
         formulaEl.innerHTML = "값을 입력하면 계산 과정이 표시됩니다.";
         alertEl.style.display = "none";
-        calcETA();
+        if (source !== "eta") calcFromRate();
         return;
       }
 
@@ -592,7 +613,6 @@
         • 60초 ÷ ${fmt(gtt, 1)} gtt = <strong>${fmt(sec, 2)}초당 1방울</strong>
       `;
 
-      // 강화된 이상치 경고
       if (gtt > 120 || baseMl > 1000) {
         alertEl.className = "alert-box alert-danger";
         alertEl.style.display = "block";
@@ -605,22 +625,28 @@
         alertEl.style.display = "none";
       }
 
-      calcETA();
+      if (source !== "eta") {
+        calcFromRate();
+      }
     }
 
     function setTotalVol(vol) {
       document.getElementById("iv-total-vol").value = vol;
-      calcETA();
+      const hasRate = parseFloat(document.getElementById("iv-ml").value) > 0;
+      const hasEnd = document.getElementById("iv-end-time").value !== "";
+      if (hasRate) calcFromRate();
+      else if (hasEnd) calcFromEndTime();
     }
 
-    function calcETA() {
+    function calcFromRate() {
       const rate = parseFloat(document.getElementById("iv-ml").value);
       const totalVol = parseFloat(document.getElementById("iv-total-vol").value);
       const startTimeStr = document.getElementById("iv-start-time").value;
+      const endEl = document.getElementById("iv-end-time");
       const resEl = document.getElementById("iv-eta-result");
 
       if (!isFinite(rate) || rate <= 0 || !isFinite(totalVol) || totalVol <= 0 || !startTimeStr) {
-        resEl.innerHTML = `<span>종료 예정 시각</span><strong>-</strong>`;
+        resEl.innerHTML = `<span>소요 시간 / 종료 예정</span><strong>-</strong>`;
         return;
       }
 
@@ -637,13 +663,50 @@
 
       const endH = endDate.getHours();
       const endM = String(endDate.getMinutes()).padStart(2, "0");
+      endEl.value = `${String(endH).padStart(2, "0")}:${endM}`;
+
       const ampm = endH >= 12 ? "오후" : "오전";
       const h12 = endH % 12 === 0 ? 12 : endH % 12;
-
       const dayPrefix = dayDiff === 1 ? "내일 " : dayDiff > 1 ? `+${dayDiff}일 ` : "";
       const durText = durH > 0 ? `${durH}시간 ${durM}분 소요` : `${durM}분 소요`;
 
       resEl.innerHTML = `<span>${durText}</span><strong>${dayPrefix}${ampm} ${h12}:${endM}</strong>`;
+    }
+
+    function calcFromEndTime() {
+      const totalVol = parseFloat(document.getElementById("iv-total-vol").value);
+      const startTimeStr = document.getElementById("iv-start-time").value;
+      const endTimeStr = document.getElementById("iv-end-time").value;
+      const resEl = document.getElementById("iv-eta-result");
+
+      if (!isFinite(totalVol) || totalVol <= 0 || !startTimeStr || !endTimeStr) {
+        resEl.innerHTML = `<span>총 용량과 시작·종료 시각을 모두 입력하세요</span><strong>-</strong>`;
+        return;
+      }
+
+      const [startH, startM] = startTimeStr.split(":").map(Number);
+      const [endH, endM] = endTimeStr.split(":").map(Number);
+
+      let diffMin = (endH * 60 + endM) - (startH * 60 + startM);
+      let isNextDay = false;
+      if (diffMin <= 0) {
+        diffMin += 24 * 60;
+        isNextDay = true;
+      }
+
+      const hours = diffMin / 60;
+      const requiredMlPerHr = totalVol / hours;
+
+      calcIV("eta", requiredMlPerHr);
+
+      const durH = Math.floor(diffMin / 60);
+      const durM = diffMin % 60;
+      const ampm = endH >= 12 ? "오후" : "오전";
+      const h12 = endH % 12 === 0 ? 12 : endH % 12;
+      const dayPrefix = isNextDay ? "내일 " : "";
+      const durText = durH > 0 ? `${durH}시간 ${durM}분 동안 주입` : `${durM}분 동안 주입`;
+
+      resEl.innerHTML = `<span>${durText}</span><strong>${dayPrefix}${ampm} ${h12}:${String(endM).padStart(2, "0")} 종료</strong>`;
     }
 
     function clearIV() {
@@ -651,10 +714,11 @@
       document.getElementById("iv-gtt").value = "";
       document.getElementById("iv-sec").value = "";
       document.getElementById("iv-total-vol").value = "";
+      document.getElementById("iv-end-time").value = "";
       setNowTime();
       document.getElementById("iv-formula").innerHTML = "값을 입력하면 계산 과정이 표시됩니다.";
       document.getElementById("iv-alert").style.display = "none";
-      calcETA();
+      document.getElementById("iv-eta-result").innerHTML = `<span>소요 시간 / 종료 예정</span><strong>-</strong>`;
     }
 
     // ==================== 2. 약물 계산기 + 나만의 프리셋 ====================
@@ -809,7 +873,6 @@
       }
       formulaEl.innerHTML = formulaHTML;
 
-      // 강화된 이상치 경고
       if (baseRatio > 5) {
         alertEl.className = "alert-box alert-danger";
         alertEl.style.display = "block";
@@ -835,7 +898,6 @@
       document.getElementById("drug-alert").style.display = "none";
     }
 
-    // 초기 실행
     setNowTime();
     renderPresets();
   </script>
