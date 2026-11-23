@@ -39,11 +39,17 @@
     }
 
     header {
-      padding: 18px 20px;
+      padding: 16px 20px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     header h1 {
@@ -60,6 +66,18 @@
       background: var(--accent-soft);
       color: var(--accent);
     }
+
+    .pro-link {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 4px 10px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent-soft);
+    }
+    .pro-link:hover { background: #dbeafe; }
 
     /* 탭 메뉴 */
     .tabs {
@@ -254,8 +272,11 @@
 <body>
   <div class="app-container">
     <header>
-      <h1>임상 수액·약물 계산기</h1>
-      <span class="badge">MVP v1.0</span>
+      <div class="header-left">
+        <h1>임상 수액·약물 계산기</h1>
+        <span class="badge">MVP v1.0</span>
+      </div>
+      <a href="pro.html" class="pro-link">Pro 버전</a>
     </header>
 
     <div class="tabs">
@@ -367,13 +388,11 @@
   </div>
 
   <script>
-    // 공통 유틸: 불필요한 소수점 제거
     function fmt(num, digits = 2) {
       if (!isFinite(num) || isNaN(num)) return "";
       return parseFloat(num.toFixed(digits));
     }
 
-    // 탭 전환
     function switchTab(tab) {
       document.querySelectorAll(".tab-btn").forEach((b, idx) => {
         b.classList.toggle("active", (tab === "iv" && idx === 0) || (tab === "drug" && idx === 1));
@@ -389,7 +408,6 @@
       currentDF = df;
       document.querySelectorAll(".df-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      // Drop Factor 변경 시 안전을 위해 mL/hr를 기준으로 재계산
       calcIV("df");
     }
 
@@ -437,7 +455,6 @@
         • 60초 ÷ ${fmt(gtt, 1)} gtt = <strong>${fmt(sec, 2)}초당 1방울</strong>
       `;
 
-      // 이상치 경고
       if (gtt > 120 || baseMl > 1000) {
         warnEl.style.display = "block";
         warnEl.textContent = "⚠️ 주입 속도가 매우 빠릅니다. 처방과 수액 세트 규격(DF)을 다시 확인하세요.";
@@ -488,7 +505,6 @@
       const formulaEl = document.getElementById("drug-formula");
       const warnEl = document.getElementById("drug-warning");
 
-      // 함량 입력 여부에 따라 처방 함량 칸 활성화/비활성화
       const hasDose = isFinite(sDose) && sDose > 0;
       doseEl.disabled = !hasDose;
       oUnitEl.disabled = !hasDose;
@@ -501,13 +517,12 @@
         return;
       }
 
-      // 단위 환산 비율 (처방 단위 -> 보유 단위)
       let unitRatio = 1;
       if (sUnit in weightFactors && oUnit in weightFactors) {
         unitRatio = weightFactors[oUnit] / weightFactors[sUnit];
       }
 
-      let baseRatio = NaN; // 투여 앰플 수 (Single Source of Truth)
+      let baseRatio = NaN;
 
       if (source === "amp") {
         baseRatio = parseFloat(ampEl.value);
@@ -518,7 +533,6 @@
         const dVal = parseFloat(doseEl.value);
         if (dVal > 0) baseRatio = (dVal * unitRatio) / sDose;
       } else if (source === "stock") {
-        // 스펙 수정 시 기존 입력된 앰플 수 또는 cc 유지
         if (parseFloat(ampEl.value) > 0) baseRatio = parseFloat(ampEl.value);
         else if (parseFloat(ccEl.value) > 0) baseRatio = parseFloat(ccEl.value) / sVol;
       }
@@ -545,7 +559,6 @@
       }
       formulaEl.innerHTML = formulaHTML;
 
-      // 이상치 경고
       if (baseRatio > 5) {
         warnEl.style.display = "block";
         warnEl.textContent = "⚠️ 1회 투여량이 5앰플을 초과합니다. 소수점과 단위를 반드시 재확인하세요.";
